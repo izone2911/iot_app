@@ -19,8 +19,8 @@ class Urls {
 }
 
 class Paths {
-  static const serverUrl = 'https://9kko1prtz9.execute-api.us-east-1.amazonaws.com/';
+  static const serverUrl = 'https://w5r3ivuvh0.execute-api.us-east-1.amazonaws.com/prod';
 
-  static const getClassList = '/prodv1/weather';
+  static const getClassList = '/get-weather?id=inside&date=';
   static const getAllSurveys = '/it5023e/get_all_surveys';
 }

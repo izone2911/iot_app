@@ -10,21 +10,6 @@ import 'screen/_index.dart' as screen;
 final GoRouter _router = GoRouter(
   initialLocation: constant.RoutePath.home.absolute,
   routes: [
-    GoRoute(
-      name: constant.RoutePath.splash.name,
-      path: constant.RoutePath.splash.relative,
-      builder: (_, __) => const screen.SplashScreen(),
-    ),
-    GoRoute(
-      name: constant.RoutePath.login.name,
-      path: constant.RoutePath.login.relative,
-      builder: (_, __) => const screen.LoginScreen(),
-    ),
-    GoRoute(
-      name: constant.RoutePath.register.name,
-      path: constant.RoutePath.register.relative,
-      builder: (_, __) => screen.RegisterScreen(),
-    ),
     StatefulShellRoute.indexedStack(
       builder: (_, __, navigationShell) => screen.ScaffoldWithHomeNavigation(
         navigationShell: navigationShell,
@@ -39,6 +24,12 @@ final GoRouter _router = GoRouter(
             ),
           ],
         ),
+        StatefulShellBranch(routes: [
+          GoRoute(
+              name: constant.RoutePath.chart.name,
+              path: constant.RoutePath.chart.relative,
+              builder: (_, __) => const screen.WeatherScreen())
+        ]),
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -58,30 +49,6 @@ final GoRouter _router = GoRouter(
             ),
           ],
         ),
-        StatefulShellBranch(routes: [
-          GoRoute(
-              name: constant.RoutePath.assignment.name,
-              path: constant.RoutePath.assignment.relative,
-              builder: (_, __) => screen.ClassScreen())
-        ]),
-        // StatefulShellBranch(
-        //   routes: [
-        //     GoRoute(
-        //       name: constant.RoutePath.messenger.name,
-        //       path: constant.RoutePath.messenger.relative,
-        //       builder: (_, __) => Container(),
-        //       routes: [
-        //         GoRoute(
-        //             name: constant.RoutePath.chat.name,
-        //             path: constant.RoutePath.chat.relative,
-        //             builder: (_, state) => screen.ChatScreen(
-        //                   id: state.pathParameters['id'] ?? '',
-        //                   partner: state.extra as provider.PartnerModel,
-        //                 ))
-        //       ],
-        //     ),
-        //   ],
-        // ),
       ],
     ),
   ],
@@ -93,11 +60,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MultiProvider(
           providers: [
-            ChangeNotifierProvider(create: (_) => provider.AuthProvider()),
+            ChangeNotifierProvider(create: (_) => provider.WeatherProvider()),
             ChangeNotifierProvider(create: (_) => provider.AlertProvider()),
-            ChangeNotifierProvider(create: (_) => provider.ClassProvider()),
-            ChangeNotifierProvider(
-                create: (_) => provider.AssignmentProvider()),
           ],
           child: MaterialApp.router(
             routerConfig: _router,

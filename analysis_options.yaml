@@ -1,5 +1,6 @@
 include: package:flutter_lints/flutter.yaml
 analyzer:
   errors:
+    avoid_print: ignore
     duplicate_ignore: ignore
     unused_import: ignore
