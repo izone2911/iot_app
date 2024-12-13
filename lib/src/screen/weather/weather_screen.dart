@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_interpolation_to_compose_strings
+// ignore_for_file: prefer_interpolation_to_compose_strings, unused_local_variable, prefer_is_empty
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,60 +6,8 @@ import 'package:quanlyhoctap/src/network/lazy_loading_widget.dart';
 
 import '../../provider/_index.dart' show WeatherProvider;
 import '../../network/network_widget.dart';
-import 'package:clean_calendar/clean_calendar.dart';
 import 'package:calendar_slider/calendar_slider.dart';
 import 'package:fl_chart/fl_chart.dart';
-
-// class WeatherScreen extends StatelessWidget {
-//   WeatherScreen({super.key});
-
-//   late WeatherProvider weatherProvider;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     weatherProvider = Provider.of(context, listen: false);
-
-//     return NetworkWidget<WeatherProvider>(
-//       onReload: () => weatherProvider.getWeatherDataWithDay("08-12-2024"),
-//       child: Scaffold(
-//         bottomNavigationBar: ElevatedButton(
-//           onPressed: () => weatherProvider.getWeatherDataWithDay("08-12-2024"),
-//           child: const Text("Press Me!"),
-//         ),
-//         body: Center(
-//           child: ListView.builder(
-//             itemCount: weatherProvider.listItem["08-12-2024"]?.length != null ? (weatherProvider.listItem["08-12-2024"]?.length) : 0,
-//             itemBuilder: (context, index) => Container(
-//               height: 140,
-//               padding: const EdgeInsets.all(16.0),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 // mainAxisAlignment: MainAxisAlignment.start,
-//                 children: [
-//                   Text(
-//                     '$index  : Thời gian',
-//                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-//                   ),
-//                   Text(
-//                     weatherProvider.listItem["08-12-2024"]![index].timestamp,
-//                     style: const TextStyle(fontSize: 12, color: Colors.grey),
-//                   ),
-//                   Text(
-//                     'Nhiệt độ: ${weatherProvider.listItem["08-12-2024"]![index].temperature.toString()}°C',
-//                     style: const TextStyle(fontSize: 16),
-//                   ),
-//                   Text(
-//                     'Độ ẩm: ${weatherProvider.listItem["08-12-2024"]![index].humidity.toString()}%',
-//                     style: const TextStyle(fontSize: 16),
-//                   ),
-//                 ]),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 // ignore: must_be_immutable
 
@@ -113,21 +61,27 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   void updateSpots(String date) {
     spotsTemperature = (weatherProvider.listItem[date]?.map((item) {
-          print(item['humidity'].toDouble().runtimeType);
-          print(double.parse(item['timestamp'].substring(11, 13)) * 3600 +
-              double.parse(item['timestamp'].substring(14, 16)) * 60 +
-              double.parse(item['timestamp'].substring(17, 19)));
-          return FlSpot(
-              double.parse(item['timestamp'].substring(11, 13) + "." + item['timestamp'].substring(14, 16)),
-              item['humidity'].toDouble()
-              );
-          // double.parse(item['timestamp'].substring(11,13))*60*60+double.parse(item['timestamp'].substring(14,16))*60+double.parse(item['timestamp'].substring(17,19))
+          return FlSpot(double.parse(item['timestamp'].substring(11, 13)),
+              item['temperature'].toDouble());
         }).toList()) ??
         [];
+
+    spotsHumidity = (weatherProvider.listItem[date]?.map((item) {
+          return FlSpot(double.parse(item['timestamp'].substring(11, 13)),
+              item['humidity'].toDouble());
+        }).toList()) ??
+        [];
+
+    spotsTemperature.sort((a, b) => a.x.compareTo(b.x));
+    spotsHumidity.sort((a, b) => a.x.compareTo(b.x));
     setState(() {}); // Cập nhật trạng thái
   }
 
   List<FlSpot> spotsTemperature = List.generate(8, (index) {
+    return const FlSpot(1.0, 1.00);
+  });
+
+  List<FlSpot> spotsHumidity = List.generate(8, (index) {
     return const FlSpot(1.0, 1.00);
   });
 
@@ -177,12 +131,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
             monthYearButtonBackgroundColor:
                 const Color.fromARGB(255, 0, 112, 107),
           ),
-
           const SizedBox(height: 20),
           isLoading == true
               ? const CircularProgressIndicator()
               : const SizedBox.shrink(),
-
           weatherProvider.listItem[selectedDateString]?.length == 0 &&
                   isLoading == false
               ? Text(
@@ -190,7 +142,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   style: const TextStyle(fontSize: 18),
                 )
               : const SizedBox.shrink(),
-
           const SizedBox(height: 20),
           Expanded(
             child: weatherProvider.listItem[selectedDateString]?.length != 0 &&
@@ -199,77 +150,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.all(5),
                     // height: height * 0.5,
-                    child: Container(
+                    child: SizedBox(
                       height: 300,
                       width: 2000,
                       child: LineChart(
                         LineChartData(
-                          baselineX: 0,
-                          baselineY: 0,
-                          titlesData: FlTitlesData(
-                            rightTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                    showTitles: true,
-                                    reservedSize: 40,
-                                    getTitlesWidget: (value, meta) {
-                                      return const Text('');
-                                    })),
-                            topTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                    showTitles: true,
-                                    reservedSize: 40,
-                                    getTitlesWidget: (value, meta) {
-                                      return const Text('');
-                                    })),
-                            // bottomTitles: AxisTitles(
-                            //     sideTitles: SideTitles(
-                            //         showTitles: true,
-                            //         reservedSize: 40,
-                            //         getTitlesWidget: (value, meta) {
-                            //           return Text('${value.toString()}');
-                            //         })),
-                          ),
-                          borderData: FlBorderData(
-                            show: true,
-                            border: const Border(
-                              left: BorderSide(
-                                  width: 2,
-                                  color: Colors.black), // Đường trục Y
-                              bottom: BorderSide(
-                                  width: 2,
-                                  color: Colors.black), // Đường trục X
-                            ),
-                          ),
-                          gridData: const FlGridData(show: true),
-                          lineBarsData: [
-                            // The red line
-                            LineChartBarData(
-                              spots: spotsTemperature,
-                              isCurved: true,
-                              barWidth: 3,
-                              color: Colors.red,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ))
-                : const SizedBox.shrink(),
-          ),
-
-
-          const SizedBox(height: 20),
-          Expanded(
-            child: weatherProvider.listItem[selectedDateString]?.length != 0 &&
-                    isLoading == false
-                ? SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.all(5),
-                    // height: height * 0.5,
-                    child: Container(
-                      height: 300,
-                      width: 2000,
-                      child: LineChart(
-                        LineChartData(
+                          minY: 0,
+                          maxY: 50,
+                          minX: 0,
+                          maxX: 23,
                           titlesData: FlTitlesData(
                             rightTitles: AxisTitles(
                                 sideTitles: SideTitles(
@@ -289,8 +178,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 sideTitles: SideTitles(
                                     showTitles: true,
                                     reservedSize: 40,
+                                    interval: 1,
                                     getTitlesWidget: (value, meta) {
-                                      return Text('${(value/3600).toInt()}:');
+                                      return value.toInt()>9? Text('${value.toInt()}:00 h') : Text('0${value.toInt()}:00 h');
                                     })),
                           ),
                           borderData: FlBorderData(
@@ -313,71 +203,115 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               barWidth: 3,
                               color: Colors.red,
                             ),
+
+                            LineChartBarData(
+                              spots: spotsTemperature,
+                              isCurved: true,
+                              color: Colors.red,
+                              dotData: FlDotData(
+                                show: true, // Hiển thị các điểm
+                                getDotPainter: (spot, percent, barData, index) {
+                                  return FlDotCirclePainter(
+                                    radius: 6,
+                                    color: Colors.red,
+                                    strokeWidth: 2,
+                                    strokeColor: Colors.white,
+                                  );
+                                },
+                              ),
+                              belowBarData: BarAreaData(show: false),
+                            ),
                           ],
                         ),
                       ),
                     ))
                 : const SizedBox.shrink(),
-          )
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: weatherProvider.listItem[selectedDateString]?.length != 0 &&
+                    isLoading == false
+                ? SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.all(5),
+                    // height: height * 0.5,
+                    child: SizedBox(
+                      height: 300,
+                      width: 2000,
+                      child: LineChart(
+                        LineChartData(
+                          minY: 0,
+                          maxY: 100,
+                          minX: 0,
+                          maxX: 23,
+                          titlesData: FlTitlesData(
+                            rightTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 40,
+                                    getTitlesWidget: (value, meta) {
+                                      return const Text('');
+                                    })),
+                            topTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 40,
+                                    getTitlesWidget: (value, meta) {
+                                      return const Text('');
+                                    })),
+                            bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 40,
+                                    interval: 1,
+                                    getTitlesWidget: (value, meta) {
+                                      return value.toInt()>9? Text('${value.toInt()}:00 h') : Text('0${value.toInt()}:00 h');
+                                    })),
+                          ),
+                          borderData: FlBorderData(
+                            show: true,
+                            border: const Border(
+                              left: BorderSide(
+                                  width: 2,
+                                  color: Colors.black), // Đường trục Y
+                              bottom: BorderSide(
+                                  width: 2,
+                                  color: Colors.black), // Đường trục X
+                            ),
+                          ),
+                          gridData: const FlGridData(show: true),
+                          lineBarsData: [
+                            // The red line
+                            LineChartBarData(
+                              spots: spotsHumidity,
+                              isCurved: true,
+                              barWidth: 3,
+                              color: Colors.red,
+                            ),
 
-
-
-          // const SizedBox(height: 20),
-          // weatherProvider.listItem[selectedDateString]?.length != 0 && isLoading == false
-          //     ?
-          //     SafeArea(
-          //         child: Container(
-          //         padding: const EdgeInsets.all(5),
-          //         height: height * 0.5,
-          //         child: LineChart(
-          //           LineChartData(
-          //             titlesData: FlTitlesData(
-          //               rightTitles: AxisTitles(
-          //                   sideTitles: SideTitles(
-          //                       showTitles: true,
-          //                       reservedSize: 40,
-          //                       getTitlesWidget: (value, meta) {
-          //                         return const Text('');
-          //                       })),
-          //               topTitles: AxisTitles(
-          //                   sideTitles: SideTitles(
-          //                       showTitles: true,
-          //                       reservedSize: 40,
-          //                       getTitlesWidget: (value, meta) {
-          //                         return const Text('');
-          //                       })),
-          //               bottomTitles: AxisTitles(
-          //                   sideTitles: SideTitles(
-          //                       showTitles: true,
-          //                       reservedSize: 40,
-          //                       getTitlesWidget: (value, meta) {
-          //                         return Text('${value/36000}');
-          //                       })),
-          //             ),
-          //             borderData: FlBorderData(
-          //               show: true,
-          //               border: const Border(
-          //                 left: BorderSide(
-          //                     width: 2, color: Colors.black), // Đường trục Y
-          //                 bottom: BorderSide(
-          //                     width: 2, color: Colors.black), // Đường trục X
-          //               ),
-          //             ),
-          //             gridData: const FlGridData(show: true),
-          //             lineBarsData: [
-          //               // The red line
-          //               LineChartBarData(
-          //                 spots: spotsTemperature,
-          //                 isCurved: true,
-          //                 barWidth: 3,
-          //                 color: Colors.red,
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       )
-          //     )
-          //     :const SizedBox.shrink(),
+                            LineChartBarData(
+                              spots: spotsHumidity,
+                              isCurved: true,
+                              color: Colors.red,
+                              dotData: FlDotData(
+                                show: true, // Hiển thị các điểm
+                                getDotPainter: (spot, percent, barData, index) {
+                                  return FlDotCirclePainter(
+                                    radius: 6,
+                                    color: Colors.red,
+                                    strokeWidth: 2,
+                                    strokeColor: Colors.white,
+                                  );
+                                },
+                              ),
+                              belowBarData: BarAreaData(show: false),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ))
+                : const SizedBox.shrink(),
+          ),
         ],
       ),
     ));
