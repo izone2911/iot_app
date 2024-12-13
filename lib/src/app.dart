@@ -30,25 +30,25 @@ final GoRouter _router = GoRouter(
               path: constant.RoutePath.chart.relative,
               builder: (_, __) => const screen.WeatherScreen())
         ]),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              // NOTIFICATION
-              name: constant.RoutePath.alert.name,
-              path: constant.RoutePath.alert.relative,
-              builder: (_, __) => const screen.AlertScreen(),
-              routes: [
-                GoRoute(
-                  // NOTIFICATION
-                  name: constant.RoutePath.alertDetail.name,
-                  path: constant.RoutePath.alertDetail.relative,
-                  builder: (_, state) => screen.AlertDetailScreen(
-                      alertModel: state.extra as provider.AlertModel),
-                ),
-              ],
-            ),
-          ],
-        ),
+        // StatefulShellBranch(
+        //   routes: [
+        //     GoRoute(
+        //       // NOTIFICATION
+        //       name: constant.RoutePath.alert.name,
+        //       path: constant.RoutePath.alert.relative,
+        //       builder: (_, __) => const screen.AlertScreen(),
+        //       routes: [
+        //         GoRoute(
+        //           // NOTIFICATION
+        //           name: constant.RoutePath.alertDetail.name,
+        //           path: constant.RoutePath.alertDetail.relative,
+        //           builder: (_, state) => screen.AlertDetailScreen(
+        //               alertModel: state.extra as provider.AlertModel),
+        //         ),
+        //       ],
+        //     ),
+        //   ],
+        // ),
       ],
     ),
   ],
@@ -61,7 +61,6 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) => MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => provider.WeatherProvider()),
-            ChangeNotifierProvider(create: (_) => provider.AlertProvider()),
           ],
           child: MaterialApp.router(
             routerConfig: _router,
