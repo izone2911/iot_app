@@ -30,6 +30,12 @@ final GoRouter _router = GoRouter(
               path: constant.RoutePath.chart.relative,
               builder: (_, __) => const screen.WeatherScreen())
         ]),
+        StatefulShellBranch(routes: [
+          GoRoute(
+              name: constant.RoutePath.config.name,
+              path: constant.RoutePath.config.relative,
+              builder: (_, __) => const screen.ConfigDevicesScreen())
+        ]),
         // StatefulShellBranch(
         //   routes: [
         //     GoRoute(

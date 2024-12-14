@@ -12,6 +12,8 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 214, 231, 246),
+
       body: Center(
         child: GestureDetector(
           onTap: () {

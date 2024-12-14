@@ -3,4 +3,6 @@ analyzer:
   errors:
     avoid_print: ignore
     duplicate_ignore: ignore
+    prefer_const_constructors: ignore
+    prefer_const_literals_to_create_immutables: ignore
     unused_import: ignore
