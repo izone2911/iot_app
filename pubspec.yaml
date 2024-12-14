@@ -28,6 +28,8 @@ dependencies:
   collection: ^1.18.0
   sidebarx: ^0.17.1
   calendar_slider: ^0.0.4
+  mqtt_client: ^9.7.0
+  ndialog: ^4.3.1
 
 dev_dependencies:
   flutter_test:
@@ -38,3 +40,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/certs/DeviceCertificate.crt
+    - assets/certs/PrivateKey.key
+    - assets/certs/AmazonRootCA1.pem
