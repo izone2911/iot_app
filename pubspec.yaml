@@ -20,7 +20,6 @@ dependencies:
   stomp_dart_client: ^2.1.0
   dio: ^5.7.0
   form_builder_file_picker: ^4.2.0
-  file_picker: 8.1.4
   flutter_localizations:
     sdk: flutter
   intl: ^0.19.0
