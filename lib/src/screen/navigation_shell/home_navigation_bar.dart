@@ -109,7 +109,7 @@ class ScaffoldWithHomeNavigation extends StatelessWidget {
           SidebarXItem(
             icon: Icons.edgesensor_high,
             label: 'Quản lý thiết bị',
-            onTap: () => navigationShell.goBranch(22),
+            onTap: () => navigationShell.goBranch(2),
           ),
           SidebarXItem(
             icon: Icons.notifications,
