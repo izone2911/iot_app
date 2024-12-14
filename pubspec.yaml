@@ -20,6 +20,7 @@ dependencies:
   stomp_dart_client: ^2.1.0
   dio: ^5.7.0
   form_builder_file_picker: ^4.2.0
+  file_picker: 8.1.4
   flutter_localizations:
     sdk: flutter
   intl: ^0.19.0
@@ -28,6 +29,8 @@ dependencies:
   sidebarx: ^0.17.1
   calendar_slider: ^0.0.4
   file_picker: 8.1.4
+  mqtt_client: ^9.7.0
+  ndialog: ^4.3.1
 
 dev_dependencies:
   flutter_test:
@@ -38,3 +41,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/certs/DeviceCertificate.crt
+    - assets/certs/PrivateKey.key
+    - assets/certs/AmazonRootCA1.pem

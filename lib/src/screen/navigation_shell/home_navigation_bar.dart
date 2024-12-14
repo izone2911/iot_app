@@ -3,21 +3,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
 import '../../provider/_index.dart' as provider;
 import 'package:sidebarx/sidebarx.dart';
-
 
 class ScaffoldWithHomeNavigation extends StatelessWidget {
   const ScaffoldWithHomeNavigation({required this.navigationShell, super.key});
 
   final StatefulNavigationShell navigationShell;
 
-
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 147, 198, 240),
@@ -90,7 +85,7 @@ class ScaffoldWithHomeNavigation extends StatelessWidget {
               child: ClipOval(
                 // borderRadius: BorderRadius.circular(110),
                 child: Image.asset(
-                  'assets/images/Ganja.jpg', 
+                  'assets/images/Ganja.jpg',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -111,15 +106,15 @@ class ScaffoldWithHomeNavigation extends StatelessWidget {
             label: 'Thống kê',
             onTap: () => navigationShell.goBranch(1),
           ),
-          // SidebarXItem(
-          //   icon: Icons.notifications,
-          //   label: 'Thông báo',
-          //   onTap: () => navigationShell.goBranch(2),
-          // ),
+          SidebarXItem(
+            icon: Icons.notifications,
+            label: 'Thông báo',
+            onTap: () => navigationShell.goBranch(2),
+          ),
           SidebarXItem(
             icon: Icons.edgesensor_high,
             label: 'Quản lý thiết bị',
-            onTap: () => navigationShell.goBranch(2),
+            onTap: () => navigationShell.goBranch(3),
           ),
         ],
       ),
