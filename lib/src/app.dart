@@ -49,6 +49,13 @@ final GoRouter _router = GoRouter(
         //     ),
         //   ],
         // ),
+        StatefulShellBranch(routes: [
+          GoRoute(
+            name: constant.RoutePath.alert.name,
+            path: constant.RoutePath.alert.relative,
+            builder: (_, __) => const screen.AlertScreen(),
+          )
+        ])
       ],
     ),
   ],
