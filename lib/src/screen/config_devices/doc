@@ -1,0 +1,18 @@
+
+
+2 sensor, id:'inside', id:'outside'
+
+app kiểm tra sensor 'inside' hoạt động ---> gửi topic 'check_inside' --->ESP nghe topic --->
+                                                                                           |
+        app lấy topic 'inside_running' <---  gửi lại topic 'inside_running'            <---|
+
+
+
+app thay đổi time ---> gửi topic 'change_time_inside' cùng {change_time: 1000 (ms) }--->ESP nghe topic ---> 
+                                                                                                          |
+                                    app lấy topic 'inside_changed'<--- gửi lại topic 'inside_changed' <---|
+
+
+
+
+---có thể làm thêm cái tắt sensor nếu muốn---

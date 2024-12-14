@@ -93,6 +93,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 214, 231, 246),
         body: Center(
       child: Column(
         children: [

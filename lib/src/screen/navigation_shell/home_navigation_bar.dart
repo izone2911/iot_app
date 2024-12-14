@@ -15,14 +15,15 @@ class ScaffoldWithHomeNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          // title: Text('Drawer Example'),
-          // actions: [IconButton(
-          //     icon: const Icon(Icons.menu),
-          //     onPressed: () {
-          //       _controller.toggleExtended();  // Mở ngăn kéo
-          //     },
-          //   ),]
-          ),
+        backgroundColor: const Color.fromARGB(255, 147, 198, 240),
+        // title: Text('Drawer Example'),
+        // actions: [IconButton(
+        //     icon: const Icon(Icons.menu),
+        //     onPressed: () {
+        //       _controller.toggleExtended();  // Mở ngăn kéo
+        //     },
+        //   ),]
+        ),
       body: navigationShell,
       drawer: SidebarX(
         // controller: _controller,
@@ -102,13 +103,18 @@ class ScaffoldWithHomeNavigation extends StatelessWidget {
           ),
           SidebarXItem(
             icon: Icons.insert_chart,
-            label: 'Biểu đồ',
+            label: 'Thống kê',
             onTap: () => navigationShell.goBranch(1),
           ),
           SidebarXItem(
             icon: Icons.notifications,
             label: 'Thông báo',
             onTap: () => navigationShell.goBranch(2),
+          ),
+          SidebarXItem(
+            icon: Icons.edgesensor_high,
+            label: 'Quản lý thiết bị',
+            onTap: () => navigationShell.goBranch(3),
           ),
         ],
       ),
