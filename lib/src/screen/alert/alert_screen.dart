@@ -17,15 +17,15 @@ class AlertScreen extends StatefulWidget {
 }
 
 class AlertScreenState extends State<AlertScreen> {
-
   late provider.AlertData alertData;
 
   @override
   Widget build(BuildContext context) {
 
-    alertData = Provider.of<provider.AlertData>(context, listen: false);
     return Scaffold(
-      
+      body: Center(
+        child: Text('trang thông báo'),
+      ),
     );
   }
 }

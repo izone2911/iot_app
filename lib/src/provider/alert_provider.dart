@@ -11,8 +11,14 @@ class AlertData with ChangeNotifier {
 
   void addAlertData(String key, dynamic item) {
     _alert[key]!.add(item);
-    print("$key ${key.runtimeType}");
-    print(_alert);
+    print("Thêm vào chưa đọc");
+    print(unreadData);
+    notifyListeners();
+  }
+
+  void changeUnreadToReadData(String key, dynamic item) {
+    _alert[key] = item;
+    print("Xóa khỏi chưa đọc");
     notifyListeners();
   }
 }

@@ -35,9 +35,9 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
 
     awsIotProvider.connect().then((isConnected) {
       if (isConnected) {
-        awsIotProvider.subscribe('inside_running',alertData);
-        awsIotProvider.subscribe('inside_changed',alertData);
-        awsIotProvider.subscribe('esp32/pub',alertData);
+        awsIotProvider.subscribe('inside_running', alertData);
+        awsIotProvider.subscribe('inside_changed', alertData);
+        awsIotProvider.subscribe('esp32/pub', alertData);
         print("Subscribed to topics after successful connection.");
       } else {
         print("Failed to connect to MQTT broker.");
@@ -57,7 +57,6 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
         actions: [
           Consumer<provider.AlertData>(
             builder: (context, alertData, child) {
-
               return IconButton(
                 icon: Icon(
                   alertData.unreadData!.isNotEmpty
@@ -69,6 +68,10 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
                 ),
                 onPressed: () {
                   navigationShell.goBranch(3); // Chuyển đến trang thông báo
+                  Future.delayed(Duration(seconds: 1), () {
+                    alertData.changeUnreadToReadData(
+                        "unread", []); // Test tắt thông báo sau 1s khi ấn nhìn cho mượt :> ---> Sau cần thêm chuyển chưa đọc -> đã đọc
+                  });
                 },
               );
             },
