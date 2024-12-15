@@ -25,6 +25,7 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
   @override
   void initState() {
     super.initState();
+    alertData = Provider.of<provider.AlertData>(context, listen: false);
 
     awsIotProvider = provider.AwsIotProvider(clientId: "FixedClientID");
     // awsIotProvider.connect();
@@ -34,9 +35,9 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
 
     awsIotProvider.connect().then((isConnected) {
       if (isConnected) {
-        awsIotProvider.subscribe('inside_running');
-        awsIotProvider.subscribe('inside_changed');
-        awsIotProvider.subscribe('esp32/pub');
+        awsIotProvider.subscribe('inside_running',alertData);
+        awsIotProvider.subscribe('inside_changed',alertData);
+        awsIotProvider.subscribe('esp32/pub',alertData);
         print("Subscribed to topics after successful connection.");
       } else {
         print("Failed to connect to MQTT broker.");

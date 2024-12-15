@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:provider/provider.dart';
 import '_index.dart';
 import 'alert_provider.dart';
 
@@ -31,7 +32,7 @@ class AwsIotProvider {
 
   late MqttServerClient client;
 
-  final AlertData alertData = AlertData();
+  // final alertData = Provider.of<AlertData>(context, listen: false);
 
   AwsIotProvider({required this.clientId}) {
     client = MqttServerClient(brokerUrl, clientId, maxConnectionAttempts: 3);
@@ -82,7 +83,7 @@ class AwsIotProvider {
     }
   }
 
-  void subscribe(String topic) {
+  void subscribe(String topic, AlertData alertData) {
     client.subscribe(topic, MqttQos.atLeastOnce);
     client.updates?.listen((List<MqttReceivedMessage<MqttMessage?>>? messages) {
       final recMessage = messages![0].payload as MqttPublishMessage;
@@ -90,7 +91,7 @@ class AwsIotProvider {
           MqttPublishPayload.bytesToStringAsString(recMessage.payload.message);
       addDataAws(topic, payload);
       if(topic=='esp32/pub') {
-        alertData.addAlertData('unread', payload);// Thêm payload nhận được vào thông báo chưa đọc
+        alertData.addAlertData("unread", payload);// Thêm payload nhận được vào thông báo chưa đọc
       }
       // print("Received message: $payload from topic: ${messages[0].topic}");
     });

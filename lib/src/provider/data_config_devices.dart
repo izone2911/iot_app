@@ -12,6 +12,7 @@ class ConfigData with ChangeNotifier {
 
   void addConfigData(String key, dynamic item) {
     _config[key]!.add(item);
+    print("có inside");
     notifyListeners();
   }
 }
