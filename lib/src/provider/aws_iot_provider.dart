@@ -1,4 +1,3 @@
-/// CHƯA DÙNG ĐẾN FILE NÀY
 
 import 'dart:io';
 import 'package:flutter/services.dart';
