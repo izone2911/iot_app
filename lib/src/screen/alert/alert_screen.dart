@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:ndialog/ndialog.dart';
+import '../../provider/_index.dart';
 
 class AlertScreen extends StatefulWidget {
   const AlertScreen({super.key});

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import './dropdown_time.dart';
+import '../../provider/_index.dart' as provider;
+
+provider.AwsIotProvider awsIotProvider = provider.AwsIotProvider(clientId: "FixedClientID");
+
 
 void insideSensorDialog(BuildContext context) {
   showDialog(
@@ -18,11 +22,12 @@ void insideSensorDialog(BuildContext context) {
                     const Spacer(),
                     InkWell(
                         onTap: () {
+                          // awsIotProvider.
                           print('Bật/Tắt sensor trong nhà');
                         },
                         child: Text(
-                          'Bật/Tắt',
-                          style: TextStyle(color: Colors.green),
+                          'Kiểm tra',
+                          style: TextStyle(color: const Color.fromARGB(255, 118, 21, 215)),
                         )),
                   ],
                 )),

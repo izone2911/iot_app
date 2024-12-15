@@ -26,6 +26,7 @@ class _DropdownList extends State<DropdownTimeList> {
             );
           }).toList(),
           onChanged: (String? newValue) {
+            print("Chạm");
             setState(() {
               _selectedValue = newValue;
             });

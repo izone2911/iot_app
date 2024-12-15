@@ -6,24 +6,74 @@ import 'package:provider/provider.dart';
 import '../../provider/_index.dart' as provider;
 import 'package:sidebarx/sidebarx.dart';
 
-class ScaffoldWithHomeNavigation extends StatelessWidget {
+class ScaffoldWithHomeNavigation extends StatefulWidget {
   const ScaffoldWithHomeNavigation({required this.navigationShell, super.key});
-
   final StatefulNavigationShell navigationShell;
 
   @override
+  State<ScaffoldWithHomeNavigation> createState() =>
+      _ScaffoldWithHomeNavigation();
+}
+
+class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
+  // const ScaffoldWithHomeNavigation({required this.navigationShell, super.key});
+  late provider.AwsIotProvider awsIotProvider;
+  late provider.AlertData alertData;
+
+  bool haveNotifications = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    awsIotProvider = provider.AwsIotProvider(clientId: "FixedClientID");
+    // awsIotProvider.connect();
+    // awsIotProvider.subscribe('inside_running');
+    // awsIotProvider.subscribe('inside_changed');
+    // awsIotProvider.subscribe('esp32/pub');
+
+    awsIotProvider.connect().then((isConnected) {
+      if (isConnected) {
+        awsIotProvider.subscribe('inside_running');
+        awsIotProvider.subscribe('inside_changed');
+        awsIotProvider.subscribe('esp32/pub');
+        print("Subscribed to topics after successful connection.");
+      } else {
+        print("Failed to connect to MQTT broker.");
+      }
+    }).catchError((error) {
+      print("Error connecting to MQTT broker: $error");
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final navigationShell = widget.navigationShell;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 147, 198, 240),
-        // title: Text('Drawer Example'),
-        // actions: [IconButton(
-        //     icon: const Icon(Icons.menu),
-        //     onPressed: () {
-        //       _controller.toggleExtended();  // Mở ngăn kéo
-        //     },
-        //   ),]
-        ),
+        actions: [
+          Consumer<provider.AlertData>(
+            builder: (context, alertData, child) {
+
+              return IconButton(
+                icon: Icon(
+                  alertData.unreadData!.isNotEmpty
+                      ? Icons.notifications_active
+                      : Icons.notifications_none,
+                  color: alertData.unreadData!.isNotEmpty
+                      ? Colors.red
+                      : Colors.black,
+                ),
+                onPressed: () {
+                  navigationShell.goBranch(3); // Chuyển đến trang thông báo
+                },
+              );
+            },
+          ),
+        ],
+      ),
       body: navigationShell,
       drawer: SidebarX(
         // controller: _controller,

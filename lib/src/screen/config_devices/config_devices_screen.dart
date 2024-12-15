@@ -1,27 +1,38 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quanlyhoctap/src/network/lazy_loading_widget.dart';
 
 import '../../network/network_widget.dart';
 import 'package:calendar_slider/calendar_slider.dart';
+import '../../provider/_index.dart' as provider;
 import './inside_sensor_form.dart';
 import './outside_sensor_form.dart';
 
-class ConfigDevicesScreen extends StatefulWidget {
+// class ConfigDevicesScreen extends StatefulWidget {
+//   const ConfigDevicesScreen({super.key});
+
+//   @override
+//   State<ConfigDevicesScreen> createState() => _DevicesScreenState();
+// }
+
+// ignore: must_be_immutable
+class ConfigDevicesScreen extends StatelessWidget {
+  // late ConfigData configData;
+
   const ConfigDevicesScreen({super.key});
 
-  @override
-  State<ConfigDevicesScreen> createState() => _DevicesScreenState();
-}
-
-class _DevicesScreenState extends State<ConfigDevicesScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     // ignore: unused_local_variable
     final height = MediaQuery.of(context).size.height;
 
-    return Scaffold(
+    return Consumer<provider.ConfigData>(
+      builder: (context, configData, child){
+        provider.ConfigData newconfigData = configData;
+          return Scaffold(
       backgroundColor: const Color.fromARGB(255, 214, 231, 246),
       
         appBar: AppBar(
@@ -39,7 +50,6 @@ class _DevicesScreenState extends State<ConfigDevicesScreen> {
               InkWell(
                 onTap: () {
                   insideSensorDialog(context);
-                  print('Tapped sensor inside');
                 },
                 child: Container(
                     width: width - 40,
@@ -58,9 +68,14 @@ class _DevicesScreenState extends State<ConfigDevicesScreen> {
                           fontSize: 20,
                         ),),
                         const Spacer(),
-                        Text(
-                          'Bật/Tắt',
+                        newconfigData.configData['inside_running']
+                        ?Text(
+                          'Bật',
                           style: TextStyle(color: Colors.green, fontSize: 25),
+                        )
+                        :Text(
+                          'Tắt',
+                          style: TextStyle(color: Colors.red, fontSize: 25),
                         )
                       ],
                     )),
@@ -90,9 +105,14 @@ class _DevicesScreenState extends State<ConfigDevicesScreen> {
                           fontSize: 20,
                         ),),
                         const Spacer(),
-                        Text(
-                          'Bật/Tắt',
+                        newconfigData.configData['outside_running']
+                        ?Text(
+                          'Bật',
                           style: TextStyle(color: Colors.green, fontSize: 25),
+                        )
+                        :Text(
+                          'Tắt',
+                          style: TextStyle(color: Colors.red, fontSize: 25),
                         )
                       ],
                     )),
@@ -100,5 +120,6 @@ class _DevicesScreenState extends State<ConfigDevicesScreen> {
             ],
           ),
         )));
+      });
   }
 }

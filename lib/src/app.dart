@@ -34,7 +34,7 @@ final GoRouter _router = GoRouter(
           GoRoute(
               name: constant.RoutePath.config.name,
               path: constant.RoutePath.config.relative,
-              builder: (_, __) => const screen.ConfigDevicesScreen())
+              builder: (_, __) => screen.ConfigDevicesScreen())
         ]),
         // StatefulShellBranch(
         //   routes: [
@@ -74,6 +74,8 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) => MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => provider.WeatherProvider()),
+            ChangeNotifierProvider(create: (_) => provider.AlertData()),
+            ChangeNotifierProvider(create: (_) => provider.ConfigData()),
           ],
           child: MaterialApp.router(
             routerConfig: _router,

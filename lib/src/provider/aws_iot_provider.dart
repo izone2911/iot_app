@@ -1,18 +1,37 @@
 
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import '_index.dart';
+import 'alert_provider.dart';
 
 class AwsIotProvider {
+
+  final Map<String, dynamic> _map = {
+    'inside_running': {},
+    'inside_changed': {},
+    'esp32/pub': {}
+  };
+
+  Map<String, dynamic> get dataAws => _map;
+
+  void addDataAws(String key, dynamic item) {
+      _map[key] = [item];
+  }
+
+
   final String brokerUrl = 'a16rrf6y48w5mg-ats.iot.us-east-1.amazonaws.com';
   final int port = 8883;
   final String clientId;
   final String rootCAPath = 'assets/certs/AmazonRootCA1.pem';
-  final String deviceCertPath = 'assets/certs/DeviceCertificate.crtt';
+  final String deviceCertPath = 'assets/certs/DeviceCertificate.crt';
   final String privateKeyPath = 'assets/certs/PrivateKey.key';
 
   late MqttServerClient client;
+
+  final AlertData alertData = AlertData();
 
   AwsIotProvider({required this.clientId}) {
     client = MqttServerClient(brokerUrl, clientId, maxConnectionAttempts: 3);
@@ -69,7 +88,11 @@ class AwsIotProvider {
       final recMessage = messages![0].payload as MqttPublishMessage;
       final payload =
           MqttPublishPayload.bytesToStringAsString(recMessage.payload.message);
-      print("Received message: $payload from topic: ${messages[0].topic}");
+      addDataAws(topic, payload);
+      if(topic=='esp32/pub') {
+        alertData.addAlertData('unread', payload);// Thêm payload nhận được vào thông báo chưa đọc
+      }
+      // print("Received message: $payload from topic: ${messages[0].topic}");
     });
   }
 
