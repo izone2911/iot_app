@@ -4,7 +4,7 @@ class ConfigData with ChangeNotifier {
   final Map<String, dynamic> _config = {
     'inside_running': true,
     'inside_changed': 60*1000,
-    'outside_running': false,
+    'outside_running': true,
     'outside_changed': 60*1000,
   };
 
@@ -12,7 +12,6 @@ class ConfigData with ChangeNotifier {
 
   void addConfigData(String key, dynamic item) {
     _config[key]!.add(item);
-    print("có inside");
     notifyListeners();
   }
 }

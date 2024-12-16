@@ -14,27 +14,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreen extends State<HomeScreen> {
-  late provider.AwsIotProvider awsIotProvider;
-  late provider.RealTimeData realTimeData;
-
-  @override
-  void initState() {
-    super.initState();
-    realTimeData = Provider.of<provider.RealTimeData>(context, listen: false);
-
-    awsIotProvider = provider.AwsIotProvider(clientId: "FixedClientID");
-
-    awsIotProvider.connect().then((isConnected) {
-      if (isConnected) {
-        awsIotProvider.subscribeRealTime('esp32/pub', realTimeData);
-        print("Subscribed to topics after successful connection.");
-      } else {
-        print("Failed to connect to MQTT broker.");
-      }
-    }).catchError((error) {
-      print("Error connecting to MQTT broker: $error");
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,22 +23,24 @@ class _HomeScreen extends State<HomeScreen> {
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Consumer<provider.RealTimeData>(
-              builder: (context, realTimeData, child) {
+            Consumer<provider.AwsIotProvider>(
+              builder: (context, awsIotProvider, child) {
                 return Column(
                   // mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+
                     Text(
                       'Inside Sensor Data:',
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
+
                     Text(
-                        'Temperature: ${realTimeData.realTime["inside"]!["temperature"]}'),
+                        'Temperature: ${awsIotProvider.dataAws['esp32/pub_inside']["temperature"]}'),
                     Text(
-                        'Humidity: ${realTimeData.realTime["inside"]!["humidity"]}'),
+                        'Humidity: ${awsIotProvider.dataAws['esp32/pub_inside']["humidity"]}'),
                     Text(
-                        'Timestamp: ${realTimeData.realTime["inside"]!["timestamp"]}'),
+                        'Timestamp: ${awsIotProvider.dataAws['esp32/pub_inside']["timestamp"]}'),
                     SizedBox(height: 20),
                     Text(
                       'Outside Sensor Data:',
@@ -67,11 +48,11 @@ class _HomeScreen extends State<HomeScreen> {
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                        'Temperature: ${realTimeData.realTime["outside"]!["temperature"]}'),
+                        'Temperature: ${awsIotProvider.dataAws['esp32/pub_outside']["temperature"]}'),
                     Text(
-                        'Humidity: ${realTimeData.realTime["outside"]!["humidity"]}'),
+                        'Humidity: ${awsIotProvider.dataAws['esp32/pub_outside']["humidity"]}'),
                     Text(
-                        'Timestamp: ${realTimeData.realTime["outside"]!["timestamp"]}'),
+                        'Timestamp: ${awsIotProvider.dataAws['esp32/pub_outside']["timestamp"]}'),
                     SizedBox(height: 20),
                   ],
                 );
