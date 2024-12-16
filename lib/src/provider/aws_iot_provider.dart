@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -9,18 +10,36 @@ import 'package:provider/provider.dart';
 import '_index.dart';
 // import 'alert_provider.dart';
 
-class AwsIotProvider {
+class AwsIotProvider with ChangeNotifier {
   final Map<String, dynamic> _map = {
-    'inside_running': {},
+    'inside_running': {'running': true, 'time': '10'},
     'inside_changed': {},
-    'esp32/pub': {}
+    'outside_running': {'running': true, 'time': '10'},
+    'outside_changed': {},
+    'esp32/pub_inside': {
+      "id": "inside",
+      "humidity": 0,
+      "temperature": 0,
+      "timestamp": "",
+    },
+    'esp32/pub_outside': {
+      "id": "outside",
+      "humidity": 0,
+      "temperature": 0,
+      "timestamp": "",
+    }
   };
 
   Map<String, dynamic> get dataAws => _map;
 
   void addDataAws(String key, dynamic item) {
-    _map[key] = [item];
+    _map[key] = item;
+    notifyListeners();
   }
+
+  bool checkInsideRunning = false;
+  bool checkOutsideRunning = false;
+  Timer? timer;
 
   final String brokerUrl = 'a16rrf6y48w5mg-ats.iot.us-east-1.amazonaws.com';
   final int port = 8883;
@@ -55,7 +74,7 @@ class AwsIotProvider {
       client.port = port;
       client.secure = true;
       client.logging(on: true);
-      client.keepAlivePeriod = 20;
+      client.keepAlivePeriod = 60;
 
       // Set connection callbacks
       client.onConnected = onConnected;
@@ -86,9 +105,27 @@ class AwsIotProvider {
     client.subscribe(topic, MqttQos.atLeastOnce);
     client.updates?.listen((List<MqttReceivedMessage<MqttMessage?>>? messages) {
       final recMessage = messages![0].payload as MqttPublishMessage;
-      final payload =
-          MqttPublishPayload.bytesToStringAsString(recMessage.payload.message);
-      addDataAws(topic, payload);
+      final payload = jsonDecode(
+          MqttPublishPayload.bytesToStringAsString(recMessage.payload.message));
+      if (topic == messages[0].topic) {
+        print("$payload  with  $topic");
+        if (topic == 'esp32/pub' && payload['id'] == 'inside') {
+          addDataAws("esp32/pub_inside", payload);
+        }
+        if (topic == 'esp32/pub' && payload['id'] == 'outside') {
+          addDataAws("esp32/pub_outside", payload);
+        }
+        if (topic != 'esp32/pub') addDataAws(topic, payload);
+        
+
+        if(topic == 'inside_running') {
+          checkInsideRunning = true;
+        }
+        if(topic == 'outside_running') {
+          print("Tao chạy sub");
+          checkOutsideRunning = true;
+        }
+      }
       if (topic == 'esp32/pub') {
         // Thêm payload nhận được vào thông báo chưa đọc
         alertData.addAlertData("unread", payload);
@@ -97,29 +134,26 @@ class AwsIotProvider {
     });
   }
 
-  void subscribeRealTime(String topic, RealTimeData realTimeData) {
-    client.subscribe(topic, MqttQos.atLeastOnce);
-    client.updates?.listen((List<MqttReceivedMessage<MqttMessage?>>? messages) {
-      final recMessage = messages![0].payload as MqttPublishMessage;
-      final payload =
-          MqttPublishPayload.bytesToStringAsString(recMessage.payload.message);
-      addDataAws(topic, payload);
-      if (topic == 'esp32/pub') {
-        Map<String, dynamic> jsonPayload = json.decode(payload);
-        realTimeData.changeRealTimeData(
-            jsonPayload['id'],
-            jsonPayload['temperature'],
-            jsonPayload['humidity'],
-            jsonPayload['timestamp']);
-      }
-      // print("Received message: $payload from topic: ${messages[0].topic}");
-    });
-  }
 
-  void publish(String topic, String message) {
+  void publish(String topic, String message, {int waitTime=800}) {
+
+    if(topic == 'check_inside') checkInsideRunning = false;
+    if(topic == 'check_outside') checkOutsideRunning = false;
+
     final builder = MqttClientPayloadBuilder();
     builder.addString(message);
     client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+
+    timer = Timer(Duration(milliseconds: waitTime), () {
+      if (!checkInsideRunning) {
+        addDataAws("inside_running", {'running': false, 'time': '10'});
+      }
+      if (!checkOutsideRunning) {
+        addDataAws("outside_running", {'running': false, 'time': '10'});
+      }
+      // Hủy timer
+      timer?.cancel();
+    });
   }
 
   void onConnected() {

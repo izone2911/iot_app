@@ -27,7 +27,9 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
     super.initState();
     alertData = Provider.of<provider.AlertData>(context, listen: false);
 
-    awsIotProvider = provider.AwsIotProvider(clientId: "FixedClientID");
+    // awsIotProvider = provider.AwsIotProvider(clientId: "FixedClientID");
+
+    awsIotProvider = Provider.of<provider.AwsIotProvider>(context, listen: false);
     // awsIotProvider.connect();
     // awsIotProvider.subscribe('inside_running');
     // awsIotProvider.subscribe('inside_changed');
@@ -37,6 +39,8 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
       if (isConnected) {
         awsIotProvider.subscribe('inside_running', alertData);
         awsIotProvider.subscribe('inside_changed', alertData);
+        awsIotProvider.subscribe('outside_running', alertData);
+        awsIotProvider.subscribe('outside_changed', alertData);
         awsIotProvider.subscribe('esp32/pub', alertData);
         print("Subscribed to topics after successful connection.");
       } else {
@@ -68,10 +72,6 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
                 ),
                 onPressed: () {
                   navigationShell.goBranch(3); // Chuyển đến trang thông báo
-                  Future.delayed(Duration(seconds: 1), () {
-                    alertData.changeUnreadToReadData(
-                        "unread", []); // Test tắt thông báo sau 1s khi ấn nhìn cho mượt :> ---> Sau cần thêm chuyển chưa đọc -> đã đọc
-                  });
                 },
               );
             },

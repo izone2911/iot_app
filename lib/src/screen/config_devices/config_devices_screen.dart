@@ -1,5 +1,7 @@
 // ignore_for_file: unused_local_variable
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quanlyhoctap/src/network/lazy_loading_widget.dart';
@@ -10,18 +12,25 @@ import '../../provider/_index.dart' as provider;
 import './inside_sensor_form.dart';
 import './outside_sensor_form.dart';
 
-// class ConfigDevicesScreen extends StatefulWidget {
-//   const ConfigDevicesScreen({super.key});
 
-//   @override
-//   State<ConfigDevicesScreen> createState() => _DevicesScreenState();
-// }
-
-// ignore: must_be_immutable
-class ConfigDevicesScreen extends StatelessWidget {
-  // late ConfigData configData;
-
+class ConfigDevicesScreen extends StatefulWidget {
   const ConfigDevicesScreen({super.key});
+
+  @override
+  State<ConfigDevicesScreen> createState() =>
+      _ConfigDevicesScreen();
+}
+
+class _ConfigDevicesScreen extends State<ConfigDevicesScreen> {
+  // late ConfigData configData;
+  
+  @override
+  void initState() {
+    super.initState();
+    var awsIotProvider = Provider.of<provider.AwsIotProvider>(context, listen: false);
+    awsIotProvider.publish("check_inside", jsonEncode({"check inside":""}));
+    awsIotProvider.publish("check_outside", jsonEncode({"check outside":""}));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +38,8 @@ class ConfigDevicesScreen extends StatelessWidget {
     // ignore: unused_local_variable
     final height = MediaQuery.of(context).size.height;
 
-    return Consumer<provider.ConfigData>(
-      builder: (context, configData, child){
-        provider.ConfigData newconfigData = configData;
+    return Consumer<provider.AwsIotProvider>(
+      builder: (context, awsIotProvider, child){
           return Scaffold(
       backgroundColor: const Color.fromARGB(255, 214, 231, 246),
       
@@ -68,7 +76,7 @@ class ConfigDevicesScreen extends StatelessWidget {
                           fontSize: 20,
                         ),),
                         const Spacer(),
-                        newconfigData.configData['inside_running']
+                        awsIotProvider.dataAws['inside_running']['running']
                         ?Text(
                           'Bật',
                           style: TextStyle(color: Colors.green, fontSize: 25),
@@ -105,7 +113,7 @@ class ConfigDevicesScreen extends StatelessWidget {
                           fontSize: 20,
                         ),),
                         const Spacer(),
-                        newconfigData.configData['outside_running']
+                        awsIotProvider.dataAws['outside_running']['running']
                         ?Text(
                           'Bật',
                           style: TextStyle(color: Colors.green, fontSize: 25),

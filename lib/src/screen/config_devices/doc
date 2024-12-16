@@ -16,3 +16,21 @@ app thay đổi time ---> gửi topic 'change_time_inside' cùng {change_time: 1
 
 
 ---có thể làm thêm cái tắt sensor nếu muốn---
+
+
+ESP pub topic:
+        - esp32/pub
+        - inside_running {"response" : "true", "time": "100"}
+        - inside_changed
+        - outside_running {"response" : "true", "time": "100"}
+        - outside_changed
+
+ESP sub topic:
+        - check_inside
+                payload: ""
+        - change_time_inside
+                payload: "10000" (Là thời gian theo ms dạng String )
+        - check_outside
+                payload: ""
+        - change_time_outside
+                payload: "10000" (Là thời gian theo ms dạng String )
