@@ -29,7 +29,7 @@ dependencies:
   calendar_slider: ^0.0.4
   file_picker: 8.1.4
   mqtt_client: ^9.7.0
-  ndialog: ^4.3.1
+  # ndialog: ^4.3.1
 
 dev_dependencies:
   flutter_test:

@@ -1,15 +1,15 @@
-
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
+// import 'package:quanlyhoctap/src/provider/realtime_provider.dart';
 import '_index.dart';
-import 'alert_provider.dart';
+// import 'alert_provider.dart';
 
 class AwsIotProvider {
-
   final Map<String, dynamic> _map = {
     'inside_running': {},
     'inside_changed': {},
@@ -19,9 +19,8 @@ class AwsIotProvider {
   Map<String, dynamic> get dataAws => _map;
 
   void addDataAws(String key, dynamic item) {
-      _map[key] = [item];
+    _map[key] = [item];
   }
-
 
   final String brokerUrl = 'a16rrf6y48w5mg-ats.iot.us-east-1.amazonaws.com';
   final int port = 8883;
@@ -90,8 +89,28 @@ class AwsIotProvider {
       final payload =
           MqttPublishPayload.bytesToStringAsString(recMessage.payload.message);
       addDataAws(topic, payload);
-      if(topic=='esp32/pub') {
-        alertData.addAlertData("unread", payload);// Thêm payload nhận được vào thông báo chưa đọc
+      if (topic == 'esp32/pub') {
+        // Thêm payload nhận được vào thông báo chưa đọc
+        alertData.addAlertData("unread", payload);
+        // print("Received message: $payload from topic: ${messages[0].topic}");
+      }
+    });
+  }
+
+  void subscribeRealTime(String topic, RealTimeData realTimeData) {
+    client.subscribe(topic, MqttQos.atLeastOnce);
+    client.updates?.listen((List<MqttReceivedMessage<MqttMessage?>>? messages) {
+      final recMessage = messages![0].payload as MqttPublishMessage;
+      final payload =
+          MqttPublishPayload.bytesToStringAsString(recMessage.payload.message);
+      addDataAws(topic, payload);
+      if (topic == 'esp32/pub') {
+        Map<String, dynamic> jsonPayload = json.decode(payload);
+        realTimeData.changeRealTimeData(
+            jsonPayload['id'],
+            jsonPayload['temperature'],
+            jsonPayload['humidity'],
+            jsonPayload['timestamp']);
       }
       // print("Received message: $payload from topic: ${messages[0].topic}");
     });
