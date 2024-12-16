@@ -76,6 +76,7 @@ class App extends StatelessWidget {
             ChangeNotifierProvider(create: (_) => provider.WeatherProvider()),
             ChangeNotifierProvider(create: (context) => provider.AlertData()),
             ChangeNotifierProvider(create: (_) => provider.ConfigData()),
+            ChangeNotifierProvider(create: (_) => provider.RealTimeData()),
           ],
           child: MaterialApp.router(
             routerConfig: _router,
