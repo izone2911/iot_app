@@ -22,7 +22,8 @@ class _DropdownList extends State<DropdownTimeListOutside> {
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButton<String>(
-            hint: Text('${awsIotProvider.dataAws['outside_changed']['change_time']}'),
+            hint: Text(
+                '${awsIotProvider.dataAws['outside_changed']['change_time']}'),
             value: awsIotProvider.dataAws['outside_changed']['change_time'],
             items: _options.map((String option) {
               return DropdownMenuItem<String>(
@@ -31,38 +32,48 @@ class _DropdownList extends State<DropdownTimeListOutside> {
               );
             }).toList(),
             onChanged: (String? newValue) async {
-              if(newValue!=null && newValue != awsIotProvider.dataAws['outside_changed']['change_time']) {
+              if (newValue != null &&
+                  newValue !=
+                      awsIotProvider.dataAws['outside_changed']
+                          ['change_time']) {
                 showDialog(
-                          context: context,
-                          barrierDismissible:
-                              false, // Không cho phép đóng khi nhấn bên ngoài
-                          builder: (BuildContext context) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          },
-                        );
+                  context: context,
+                  barrierDismissible:
+                      false, // Không cho phép đóng khi nhấn bên ngoài
+                  builder: (BuildContext context) {
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                );
                 awsIotProvider.publish(
-                            "change_time_outside", jsonEncode({"change_time":  (int.parse(newValue)*60000).toString()   }));
+                    "change_time_outside",
+                    jsonEncode({
+                      "change_time": (int.parse(newValue) * 60000).toString()
+                    }));
                 await Future.delayed(Duration(milliseconds: 800));
 
                 if (context.mounted) {
-                          // Đóng dialog loading
-                          Navigator.of(context).pop();
+                  // Đóng dialog loading
+                  Navigator.of(context).pop();
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              awsIotProvider.dataAws['outside_changed']
-                                      ['change_time'] == newValue
-                                  ? SnackBar(
-                                      content: const Text(
-                                          'Đã thay đổi thời gian đo'),
-                                      duration: const Duration(seconds: 2),
-                                    )
-                                  : SnackBar(
-                                      content: const Text(
-                                          'Thay đổi thời gian đo thất bại'),
-                                      duration: const Duration(seconds: 2),
-                                    ));
-                        }
+                  if (awsIotProvider.dataAws['outside_changed']['change_time'] !=
+                      newValue) {
+                    awsIotProvider.addDataAws(
+                        "outside_running", {'running': false, 'time': '10'});
+                  }
+
+                  ScaffoldMessenger.of(context).showSnackBar(awsIotProvider
+                              .dataAws['outside_changed']['change_time'] ==
+                          newValue
+                      ? SnackBar(
+                          content: const Text('Đã thay đổi thời gian đo'),
+                          duration: const Duration(seconds: 2),
+                        )
+                      : SnackBar(
+                          content: const Text(
+                              'Thay đổi thời gian đo thất bại. Thiết bị đã tắt'),
+                          duration: const Duration(seconds: 2),
+                        ));
+                }
               }
             },
           ),
