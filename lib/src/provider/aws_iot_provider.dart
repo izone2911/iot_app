@@ -115,14 +115,23 @@ class AwsIotProvider with ChangeNotifier {
         if (topic == 'esp32/pub' && payload['id'] == 'outside') {
           addDataAws("esp32/pub_outside", payload);
         }
-        if (topic != 'esp32/pub') addDataAws(topic, payload);
+        if (topic != 'esp32/pub' && topic != 'inside_changed' && topic != 'outside_changed') addDataAws(topic, payload);
         
+        if(topic == 'inside_changed'){
+          addDataAws(topic, {'change_time': ((int.parse(payload['change_time']))~/60000).toString() });
+        }
+
+        if(topic == 'outside_changed'){
+          addDataAws(topic, {'change_time': ((int.parse(payload['change_time']))~/60000).toString() });
+        }
 
         if(topic == 'inside_running') {
+          print(((int.parse(payload['time']))~/60000).toString());
+          addDataAws('inside_changed', {'change_time': ((int.parse(payload['time']))~/60000).toString() });
           checkInsideRunning = true;
         }
         if(topic == 'outside_running') {
-          print("Tao chạy sub");
+          addDataAws('outside_changed', {'change_time': (int.parse(payload['time'])~/60000).toString() });
           checkOutsideRunning = true;
         }
       }
