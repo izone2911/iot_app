@@ -1,6 +1,11 @@
+import 'package:elegant_notification/elegant_notification.dart';
+import 'package:elegant_notification/resources/arrays.dart';
+import 'package:elegant_notification/resources/stacked_options.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:in_app_notification/in_app_notification.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:quanlyhoctap/src/screen/config_devices/inside_sensor_form.dart';
 
 import '../constant/_index.dart' show RoutePath;
@@ -14,62 +19,355 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreen extends State<HomeScreen> {
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  late provider.AwsIotProvider awsIotProvider =
+      Provider.of<provider.AwsIotProvider>(context, listen: false);
+  late provider.AlertData alertData =
+      Provider.of<provider.AlertData>(context, listen: false);
+
+  void _onRefresh() async {
+    awsIotProvider.connect().then((isConnected) {
+      if (isConnected) {
+        awsIotProvider.subscribe('inside_running', alertData);
+        awsIotProvider.subscribe('inside_changed', alertData);
+        awsIotProvider.subscribe('outside_running', alertData);
+        awsIotProvider.subscribe('outside_changed', alertData);
+        awsIotProvider.subscribe('esp32/pub', alertData);
+        print("Subscribed to topics after successful connection.");
+      } else {
+        print("Failed to connect to MQTT broker.");
+      }
+    }).catchError((error) {
+      print("Error connecting to MQTT broker: $error");
+    });
+    await Future.delayed(Duration(milliseconds: 2000));
+    _refreshController.refreshCompleted();
+  }
+
+  // void notiDisconnectAws() {
+
+  //   final snackBar = SnackBar(
+  //     content: Text("Mất kết nối tới server"),
+  //     behavior: SnackBarBehavior.floating, // Đặt kiểu hành vi là floating
+  //     margin: EdgeInsets.only(top: 50), // Khoảng cách từ đỉnh
+  //   );
+
+  //   ScaffoldMessenger.of(context)
+  //       .showSnackBar(snackBar);
+  // }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 214, 231, 246),
-      body: Center(
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Consumer<provider.AwsIotProvider>(
-              builder: (context, awsIotProvider, child) {
-                return Column(
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+      body: Consumer2<provider.AwsIotProvider, provider.AlertData>(
+          builder: (context, awsIotProvider, alertData, child) {
 
-                    Text(
-                      'Inside Sensor Data:',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            
+        return SmartRefresher(
+          enablePullDown: !awsIotProvider.dataAws['mqtt_connect'],
+          header: WaterDropMaterialHeader(
+            backgroundColor: const Color.fromARGB(255, 147, 198, 240),
+            color: Colors.red,
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: Center(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              !awsIotProvider.dataAws['mqtt_connect']
+                  ? Container(
+                      height: 30,
+                      color: const Color.fromARGB(255, 147, 198, 240),
+                      child: Expanded(
+                          child: Text(
+                              "Lost connect to server. Pull down to reconnect",
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 147, 198, 240)),
+                              textAlign: TextAlign.center)),
+                    )
+                  : Container(
+                      height: 30,
+                      color: const Color.fromARGB(255, 147, 198, 240),
                     ),
+              ElevatedButton(
+                  onPressed: awsIotProvider.disconnect,
+                  child: Text("Test disconnect to Server")),
 
-                    Text(
-                        'Temperature: ${awsIotProvider.dataAws['esp32/pub_inside']["temperature"]}'),
-                    Text(
-                        'Humidity: ${awsIotProvider.dataAws['esp32/pub_inside']["humidity"]}'),
-                    Text(
-                        'Timestamp: ${awsIotProvider.dataAws['esp32/pub_inside']["timestamp"]}'),
-                    SizedBox(height: 20),
-                    Text(
-                      'Outside Sensor Data:',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              // giao diện của Trang chủ có thể cần SingleScroll .....
+
+              /////////////////  Đây là hiển thị nhiệt độ hiện tại trên trang chủ///////////////////
+              Row(
+                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  
+
+                  ////// Nhiệt độ trong nhà////// có kéo thả
+                  Draggable(
+                    childWhenDragging: Container(width: 191,),
+                    feedback: Container(
+                      height: 150,
+                      width: 170,
+                      // color: const Color.fromARGB(255, 231, 39, 39),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 236, 240, 161),
+                        borderRadius: BorderRadius.circular(
+                            20), // Thiết lập border radius
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      margin:
+                          const EdgeInsets.only(left: 14, right: 7, top: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Trong nhà",
+                            style: TextStyle(
+                                fontSize: 30,
+                                color: const Color.fromARGB(255, 8, 74, 102)),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Text(
+                                "Nhiệt độ :",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                "${awsIotProvider.dataAws['esp32/pub_inside']['temperature']}°C",
+                                style: TextStyle(
+                                  fontSize: 21,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Text(
+                                "Độ ẩm :",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                "${awsIotProvider.dataAws['esp32/pub_inside']['humidity']}%",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(
-                        'Temperature: ${awsIotProvider.dataAws['esp32/pub_outside']["temperature"]}'),
-                    Text(
-                        'Humidity: ${awsIotProvider.dataAws['esp32/pub_outside']["humidity"]}'),
-                    Text(
-                        'Timestamp: ${awsIotProvider.dataAws['esp32/pub_outside']["timestamp"]}'),
-                    SizedBox(height: 20),
-                  ],
-                );
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                context.go(RoutePath
-                    .chart.absolute); // Điều hướng đến màn hình thống kê
-              },
-              child: Text('View Details'),
-            ),
+                    child: Container(
+                      height: 150,
+                      width: 170,
+                      // color: const Color.fromARGB(255, 231, 39, 39),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 236, 240, 161),
+                        borderRadius: BorderRadius.circular(
+                            20), // Thiết lập border radius
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      margin:
+                          const EdgeInsets.only(left: 14, right: 7, top: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Trong nhà",
+                            style: TextStyle(
+                                fontSize: 30,
+                                color: const Color.fromARGB(255, 8, 74, 102)),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Text(
+                                "Nhiệt độ :",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                "${awsIotProvider.dataAws['esp32/pub_inside']['temperature']}°C",
+                                style: TextStyle(
+                                  fontSize: 21,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Text(
+                                "Độ ẩm :",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                "${awsIotProvider.dataAws['esp32/pub_inside']['humidity']}%",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
 
-            /// Hiển thị thông tin nhiệt độ độ ẩm các vùng khác
-          ],
-        ),
-      ),
+                  ////// Nhiệt độ ngoài trời////// có kéo thả
+                  Draggable(
+                    childWhenDragging: Container(),
+                    feedback: Container(
+                      height: 150,
+                      width: 170,
+                      // color: const Color.fromARGB(255, 231, 39, 39),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 146, 241, 153),
+                        borderRadius: BorderRadius.circular(
+                            20), // Thiết lập border radius
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      margin:
+                          const EdgeInsets.only(left: 7, right: 14, top: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Ngoài trời",
+                            style: TextStyle(
+                                fontSize: 30,
+                                color: const Color.fromARGB(255, 8, 74, 102)),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Text(
+                                "Nhiệt độ :",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                "${awsIotProvider.dataAws['esp32/pub_outside']['temperature']}°C",
+                                style: TextStyle(
+                                  fontSize: 21,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Text(
+                                "Độ ẩm :",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                "${awsIotProvider.dataAws['esp32/pub_outside']['humidity']}%",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    child: Container(
+                      height: 150,
+                      width: 170,
+                      // color: const Color.fromARGB(255, 231, 39, 39),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 146, 241, 153),
+                        borderRadius: BorderRadius.circular(
+                            20), // Thiết lập border radius
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      margin:
+                          const EdgeInsets.only(left: 7, right: 14, top: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Ngoài trời",
+                            style: TextStyle(
+                                fontSize: 30,
+                                color: const Color.fromARGB(255, 8, 74, 102)),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Text(
+                                "Nhiệt độ :",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                "${awsIotProvider.dataAws['esp32/pub_outside']['temperature']}°C",
+                                style: TextStyle(
+                                  fontSize: 21,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Text(
+                                "Độ ẩm :",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                "${awsIotProvider.dataAws['esp32/pub_outside']['humidity']}%",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  
+                ],
+              ),
+            //////////////////// Dùng Single Scroll hiển thị nhiệt độ Hà Nội ...... 
+            
+              
+            ],
+          )),
+        );
+      }),
     );
   }
 }

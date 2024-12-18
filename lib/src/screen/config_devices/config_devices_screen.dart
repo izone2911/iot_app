@@ -2,6 +2,9 @@
 
 import 'dart:convert';
 
+import 'package:elegant_notification/elegant_notification.dart';
+import 'package:elegant_notification/resources/arrays.dart';
+import 'package:elegant_notification/resources/stacked_options.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quanlyhoctap/src/network/lazy_loading_widget.dart';
@@ -32,14 +35,18 @@ class _ConfigDevicesScreen extends State<ConfigDevicesScreen> {
     awsIotProvider.publish("check_outside", jsonEncode({"check outside":""}));
   }
 
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     // ignore: unused_local_variable
     final height = MediaQuery.of(context).size.height;
 
-    return Consumer<provider.AwsIotProvider>(
-      builder: (context, awsIotProvider, child){
+    return Consumer2<provider.AwsIotProvider, provider.AlertData>(
+      builder: (context, awsIotProvider, alertData, child){
+
+
+
           return Scaffold(
       backgroundColor: const Color.fromARGB(255, 214, 231, 246),
       
