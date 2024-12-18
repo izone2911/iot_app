@@ -9,16 +9,11 @@ class AlertData with ChangeNotifier {
 
   List? get newData => _alert["new"];
   List? get insideData => _alert["esp_inside"];
-  List? get outsideData => _alert["esp_outside"];
+  List? get outsideData => _alert["esp_inside"];
 
   void addAlertData(String key, dynamic item) {
     _alert[key]!.add(item);
     _alert[key]!.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
     notifyListeners();
-  }
-
-  void addAlertDataNoNotify(String key, dynamic item) {
-    _alert[key]!.add(item);
-    _alert[key]!.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
   }
 }

@@ -36,25 +36,6 @@ final GoRouter _router = GoRouter(
               path: constant.RoutePath.config.relative,
               builder: (_, __) => screen.ConfigDevicesScreen())
         ]),
-        // StatefulShellBranch(
-        //   routes: [
-        //     GoRoute(
-        //       // NOTIFICATION
-        //       name: constant.RoutePath.alert.name,
-        //       path: constant.RoutePath.alert.relative,
-        //       builder: (_, __) => const screen.AlertScreen(),
-        //       routes: [
-        //         GoRoute(
-        //           // NOTIFICATION
-        //           name: constant.RoutePath.alertDetail.name,
-        //           path: constant.RoutePath.alertDetail.relative,
-        //           builder: (_, state) => screen.AlertDetailScreen(
-        //               alertModel: state.extra as provider.AlertModel),
-        //         ),
-        //       ],
-        //     ),
-        //   ],
-        // ),
         StatefulShellBranch(routes: [
           GoRoute(
             name: constant.RoutePath.alert.name,
@@ -88,5 +69,7 @@ class App extends StatelessWidget {
             supportedLocales: const [
               Locale('vi'), // Vietnamese
             ],
-          ));
+          )
+
+        );
 }

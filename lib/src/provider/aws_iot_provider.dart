@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:provider/provider.dart';
 // import 'package:quanlyhoctap/src/provider/realtime_provider.dart';
 import '_index.dart';
 // import 'alert_provider.dart';
@@ -27,7 +26,10 @@ class AwsIotProvider with ChangeNotifier {
       "humidity": 0,
       "temperature": 0,
       "timestamp": "",
-    }
+    },
+    'mqtt_connect': true,
+    'show_noti_connect': false,
+    'show_noti_disconnect': true
   };
 
   Map<String, dynamic> get dataAws => _map;
@@ -35,6 +37,10 @@ class AwsIotProvider with ChangeNotifier {
   void addDataAws(String key, dynamic item) {
     _map[key] = item;
     notifyListeners();
+  }
+
+  void changeShowNoti(String key, dynamic item) {
+    _map[key] = item;
   }
 
   bool checkInsideRunning = false;
@@ -55,6 +61,7 @@ class AwsIotProvider with ChangeNotifier {
   AwsIotProvider({required this.clientId}) {
     client = MqttServerClient(brokerUrl, clientId, maxConnectionAttempts: 3);
   }
+  
 
   Future<bool> connect() async {
     try {
@@ -74,7 +81,7 @@ class AwsIotProvider with ChangeNotifier {
       client.port = port;
       client.secure = true;
       client.logging(on: true);
-      client.keepAlivePeriod = 60;
+      client.keepAlivePeriod = 20;
 
       // Set connection callbacks
       client.onConnected = onConnected;
@@ -111,43 +118,53 @@ class AwsIotProvider with ChangeNotifier {
         print("$payload  with  $topic");
         if (topic == 'esp32/pub' && payload['id'] == 'inside') {
           addDataAws("esp32/pub_inside", payload);
+          alertData.addAlertData("new", payload);
+          alertData.addAlertDataNoNotify("esp_inside", payload);
         }
         if (topic == 'esp32/pub' && payload['id'] == 'outside') {
           addDataAws("esp32/pub_outside", payload);
+          alertData.addAlertData("new", payload);
+          alertData.addAlertDataNoNotify("esp_outside", payload);
         }
-        if (topic != 'esp32/pub' && topic != 'inside_changed' && topic != 'outside_changed') addDataAws(topic, payload);
-        
-        if(topic == 'inside_changed'){
-          addDataAws(topic, {'change_time': ((int.parse(payload['change_time']))~/60000).toString() });
+        if (topic != 'esp32/pub' &&
+            topic != 'inside_changed' &&
+            topic != 'outside_changed') addDataAws(topic, payload);
+
+        if (topic == 'inside_changed') {
+          addDataAws(topic, {
+            'change_time':
+                ((int.parse(payload['change_time'])) ~/ 60000).toString()
+          });
         }
 
-        if(topic == 'outside_changed'){
-          addDataAws(topic, {'change_time': ((int.parse(payload['change_time']))~/60000).toString() });
+        if (topic == 'outside_changed') {
+          addDataAws(topic, {
+            'change_time':
+                ((int.parse(payload['change_time'])) ~/ 60000).toString()
+          });
         }
 
-        if(topic == 'inside_running') {
-          print(((int.parse(payload['time']))~/60000).toString());
-          addDataAws('inside_changed', {'change_time': ((int.parse(payload['time']))~/60000).toString() });
+        if (topic == 'inside_running') {
+          print(((int.parse(payload['time'])) ~/ 60000).toString());
+          addDataAws('inside_changed', {
+            'change_time': ((int.parse(payload['time'])) ~/ 60000).toString()
+          });
           checkInsideRunning = true;
         }
-        if(topic == 'outside_running') {
-          addDataAws('outside_changed', {'change_time': (int.parse(payload['time'])~/60000).toString() });
+        if (topic == 'outside_running') {
+          addDataAws('outside_changed', {
+            'change_time': (int.parse(payload['time']) ~/ 60000).toString()
+          });
           checkOutsideRunning = true;
         }
       }
-      if (topic == 'esp32/pub') {
-        // Thêm payload nhận được vào thông báo chưa đọc
-        alertData.addAlertData("unread", payload);
-        // print("Received message: $payload from topic: ${messages[0].topic}");
-      }
+      
     });
   }
 
-
-  void publish(String topic, String message, {int waitTime=800}) {
-
-    if(topic == 'check_inside') checkInsideRunning = false;
-    if(topic == 'check_outside') checkOutsideRunning = false;
+  void publish(String topic, String message, {int waitTime = 800}) {
+    if (topic == 'check_inside') checkInsideRunning = false;
+    if (topic == 'check_outside') checkOutsideRunning = false;
 
     final builder = MqttClientPayloadBuilder();
     builder.addString(message);
@@ -166,15 +183,22 @@ class AwsIotProvider with ChangeNotifier {
   }
 
   void onConnected() {
+    addDataAws('mqtt_connect', true);
+    // addDataAws('show_noti_disconnect', false);
     print("Client connection was successful");
   }
 
   void onDisconnected() {
+    addDataAws('mqtt_connect', false);
+    // addDataAws('show_noti_connect', true);
     print("Client disconnected");
   }
 
   void disconnect() {
     client.disconnect();
+    addDataAws('mqtt_connect', false);
+    print("${dataAws['mqtt_connect']}   ${dataAws['show_noti_disconnect']}");
+    // addDataAws('show_noti_connect', true);
     print("Disconnected from AWS IoT");
   }
 }

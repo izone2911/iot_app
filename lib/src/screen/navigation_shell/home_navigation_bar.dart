@@ -1,10 +1,15 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:elegant_notification/elegant_notification.dart';
+import 'package:elegant_notification/resources/arrays.dart';
+import 'package:elegant_notification/resources/stacked_options.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../provider/_index.dart' as provider;
 import 'package:sidebarx/sidebarx.dart';
+
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ScaffoldWithHomeNavigation extends StatefulWidget {
   const ScaffoldWithHomeNavigation({required this.navigationShell, super.key});
@@ -16,9 +21,10 @@ class ScaffoldWithHomeNavigation extends StatefulWidget {
 }
 
 class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
-  // const ScaffoldWithHomeNavigation({required this.navigationShell, super.key});
-  late provider.AwsIotProvider awsIotProvider;
-  late provider.AlertData alertData;
+  late provider.AwsIotProvider awsIotProvider =
+      Provider.of<provider.AwsIotProvider>(context, listen: false);
+  late provider.AlertData alertData =
+      Provider.of<provider.AlertData>(context, listen: false);
 
   bool haveNotifications = true;
 
@@ -26,14 +32,8 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
   void initState() {
     super.initState();
     alertData = Provider.of<provider.AlertData>(context, listen: false);
-
-    // awsIotProvider = provider.AwsIotProvider(clientId: "FixedClientID");
-
-    awsIotProvider = Provider.of<provider.AwsIotProvider>(context, listen: false);
-    // awsIotProvider.connect();
-    // awsIotProvider.subscribe('inside_running');
-    // awsIotProvider.subscribe('inside_changed');
-    // awsIotProvider.subscribe('esp32/pub');
+    awsIotProvider =
+        Provider.of<provider.AwsIotProvider>(context, listen: false);
 
     awsIotProvider.connect().then((isConnected) {
       if (isConnected) {
@@ -59,16 +59,15 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 147, 198, 240),
         actions: [
-          Consumer<provider.AlertData>(
-            builder: (context, alertData, child) {
+          Consumer2<provider.AlertData, provider.AwsIotProvider>(
+            builder: (context, alertData, awsIotProvider, child) {
               return IconButton(
                 icon: Icon(
-                  alertData.unreadData!.isNotEmpty
+                  alertData.newData!.isNotEmpty
                       ? Icons.notifications_active
                       : Icons.notifications_none,
-                  color: alertData.unreadData!.isNotEmpty
-                      ? Colors.red
-                      : Colors.black,
+                  color:
+                      alertData.newData!.isNotEmpty ? Colors.red : Colors.black,
                 ),
                 onPressed: () {
                   navigationShell.goBranch(3); // Chuyển đến trang thông báo

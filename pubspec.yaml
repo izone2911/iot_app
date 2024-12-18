@@ -29,6 +29,9 @@ dependencies:
   calendar_slider: ^0.0.4
   file_picker: 8.1.4
   mqtt_client: ^9.7.0
+  pull_to_refresh: ^2.0.0
+  in_app_notification: ^1.1.2
+  elegant_notification: ^2.4.0
   # ndialog: ^4.3.1
 
 dev_dependencies:
