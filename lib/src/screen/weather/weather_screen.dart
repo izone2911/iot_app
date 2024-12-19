@@ -290,7 +290,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         buttonWeatherProvider.getData['button_inside']
                     ? Container(
                         width: width,
-                        height: 470,
+                        height: 470, // giảm bé nếu bị tràn viền
                         decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 211, 231, 248),
                             borderRadius: BorderRadius.circular(20)),
@@ -494,7 +494,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                               },
                                             ),
                                             belowBarData:
-                                                BarAreaData(show: false),
+                                                BarAreaData(show: true),
                                           ),
                                         ],
                                       ),
@@ -624,7 +624,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                               },
                                             ),
                                             belowBarData:
-                                                BarAreaData(show: false),
+                                                BarAreaData(show: true),
                                           ),
                                         ],
                                       ),
@@ -725,7 +725,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                               },
                                             ),
                                             belowBarData:
-                                                BarAreaData(show: false),
+                                                BarAreaData(show: true),
                                           ),
                                         ],
                                       ),

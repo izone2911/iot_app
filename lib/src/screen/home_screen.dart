@@ -46,16 +46,12 @@ class _HomeScreen extends State<HomeScreen> {
     _refreshController.refreshCompleted();
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 214, 231, 246),
       body: Consumer2<provider.AwsIotProvider, provider.AlertData>(
           builder: (context, awsIotProvider, alertData, child) {
-
-            
         return SmartRefresher(
           enablePullDown: !awsIotProvider.dataAws['mqtt_connect'],
           header: WaterDropMaterialHeader(
@@ -72,15 +68,14 @@ class _HomeScreen extends State<HomeScreen> {
                   ? Container(
                       height: 30,
                       color: const Color.fromARGB(255, 147, 198, 240),
-                      child: Expanded(
-                          child: Text(
-                              "Lost connect to server. Pull down to reconnect",
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 147, 198, 240)),
-                              textAlign: TextAlign.center)),
+                      child: Text(
+                          "Lost connect to server. Pull down to reconnect",
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              backgroundColor:
+                                  const Color.fromARGB(255, 147, 198, 240)),
+                          textAlign: TextAlign.center),
                     )
                   : Container(
                       height: 30,
@@ -96,11 +91,11 @@ class _HomeScreen extends State<HomeScreen> {
               Row(
                 // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  
-
                   ////// Nhiệt độ trong nhà////// có kéo thả
                   Draggable(
-                    childWhenDragging: Container(width: 191,),
+                    childWhenDragging: Container(
+                      width: 191,
+                    ),
                     feedback: Container(
                       height: 150,
                       width: 170,
@@ -347,12 +342,9 @@ class _HomeScreen extends State<HomeScreen> {
                       ),
                     ),
                   )
-                  
                 ],
               ),
-            //////////////////// Dùng Single Scroll hiển thị nhiệt độ Hà Nội ...... 
-            
-              
+              //////////////////// Dùng Single Scroll hiển thị nhiệt độ Hà Nội ......
             ],
           )),
         );

@@ -34,3 +34,8 @@ ESP sub topic:
                 payload: ""
         - change_time_outside
                 payload: "10000" (Là thời gian theo ms dạng String )
+
+
+
+ESP sub topic 'home_request' rồi pub topic:
+        - 'esp32/pub_home' nội dung tương tự 'esp32/pub' 

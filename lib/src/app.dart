@@ -8,8 +8,13 @@ import 'provider/_index.dart' as provider;
 import 'screen/_index.dart' as screen;
 
 final GoRouter _router = GoRouter(
-  initialLocation: constant.RoutePath.home.absolute,
+  initialLocation: constant.RoutePath.login.absolute,
   routes: [
+    GoRoute(
+      name: constant.RoutePath.login.name,
+      path: constant.RoutePath.login.relative,
+      builder: (_, __) => screen.LoginScreen(),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (_, __, navigationShell) => screen.ScaffoldWithHomeNavigation(
         navigationShell: navigationShell,
@@ -57,8 +62,11 @@ class App extends StatelessWidget {
             ChangeNotifierProvider(create: (_) => provider.WeatherProvider()),
             ChangeNotifierProvider(create: (context) => provider.AlertData()),
             ChangeNotifierProvider(create: (_) => provider.ConfigData()),
-            ChangeNotifierProvider(create: (context) => provider.AwsIotProvider(clientId: "FixedClientID")),
-            ChangeNotifierProvider(create: (_) => provider.ButtonWeatherProvider()),
+            ChangeNotifierProvider(
+                create: (context) =>
+                    provider.AwsIotProvider(clientId: "FixedClientID")),
+            ChangeNotifierProvider(
+                create: (_) => provider.ButtonWeatherProvider()),
           ],
           child: MaterialApp.router(
             routerConfig: _router,
@@ -70,7 +78,5 @@ class App extends StatelessWidget {
             supportedLocales: const [
               Locale('vi'), // Vietnamese
             ],
-          )
-
-        );
+          ));
 }

@@ -1,5 +1,5 @@
 enum RoutePath {
-
+  login('/login','/login'),
   home('/', '/'),
   chart('/chart','/chart'),
   config('/config','/config'),
