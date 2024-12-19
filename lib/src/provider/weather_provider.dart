@@ -23,7 +23,6 @@ class WeatherProvider with ChangeNotifier {
   final Map<String, List<dynamic>> _map = {};
 
   Map<String, List<dynamic>> get listItem => _map;
-
   void addWeatherItem(String key, dynamic item) => _map[key] = item;
 
   Future<void> getWeatherDataWithDay(String date) async {
@@ -41,6 +40,6 @@ class WeatherProvider with ChangeNotifier {
     List<dynamic> weatherData = json.decode(data);
     addWeatherItem(date, weatherData);
 
-    notifyListeners();
+    // notifyListeners();
   }
 }

@@ -58,6 +58,7 @@ class App extends StatelessWidget {
             ChangeNotifierProvider(create: (context) => provider.AlertData()),
             ChangeNotifierProvider(create: (_) => provider.ConfigData()),
             ChangeNotifierProvider(create: (context) => provider.AwsIotProvider(clientId: "FixedClientID")),
+            ChangeNotifierProvider(create: (_) => provider.ButtonWeatherProvider()),
           ],
           child: MaterialApp.router(
             routerConfig: _router,

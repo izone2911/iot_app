@@ -46,17 +46,6 @@ class _HomeScreen extends State<HomeScreen> {
     _refreshController.refreshCompleted();
   }
 
-  // void notiDisconnectAws() {
-
-  //   final snackBar = SnackBar(
-  //     content: Text("Mất kết nối tới server"),
-  //     behavior: SnackBarBehavior.floating, // Đặt kiểu hành vi là floating
-  //     margin: EdgeInsets.only(top: 50), // Khoảng cách từ đỉnh
-  //   );
-
-  //   ScaffoldMessenger.of(context)
-  //       .showSnackBar(snackBar);
-  // }
 
   @override
   Widget build(BuildContext context) {
