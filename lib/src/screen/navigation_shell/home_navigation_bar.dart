@@ -42,6 +42,7 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
         awsIotProvider.subscribe('outside_running', alertData);
         awsIotProvider.subscribe('outside_changed', alertData);
         awsIotProvider.subscribe('esp32/pub', alertData);
+        awsIotProvider.subscribe('home_request', alertData);
         print("Subscribed to topics after successful connection.");
       } else {
         print("Failed to connect to MQTT broker.");
@@ -165,9 +166,9 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
             onTap: () => navigationShell.goBranch(2),
           ),
           SidebarXItem(
-            icon: Icons.notifications,
-            label: 'Thông báo',
-            onTap: () => navigationShell.goBranch(3),
+            icon: Icons.logout,
+            label: 'Đăng xuất',
+            onTap: () => context.go('/login'),
           ),
         ],
       ),

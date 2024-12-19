@@ -157,6 +157,12 @@ class AwsIotProvider with ChangeNotifier {
           });
           checkOutsideRunning = true;
         }
+        if (topic == 'esp32/pub_home_inside') {
+          addDataAws('esp32/pub_inside', payload);
+        }
+        if (topic == 'esp32/pub_home_outside') {
+          addDataAws('esp32/pub_outside', payload);
+        }
       }
       
     });
