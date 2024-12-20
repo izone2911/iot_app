@@ -11,6 +11,8 @@ import 'package:sidebarx/sidebarx.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../provider/weather_provider.dart';
+
 class ScaffoldWithHomeNavigation extends StatefulWidget {
   const ScaffoldWithHomeNavigation({required this.navigationShell, super.key});
   final StatefulNavigationShell navigationShell;
@@ -25,6 +27,8 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
       Provider.of<provider.AwsIotProvider>(context, listen: false);
   late provider.AlertData alertData =
       Provider.of<provider.AlertData>(context, listen: false);
+  late provider.WeatherProvider weatherProvider =
+      Provider.of<WeatherProvider>(context, listen: false);
 
   bool haveNotifications = true;
 
@@ -37,12 +41,14 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
 
     awsIotProvider.connect().then((isConnected) {
       if (isConnected) {
+        awsIotProvider.publish("home_request", "home_request");
         awsIotProvider.subscribe('inside_running', alertData);
         awsIotProvider.subscribe('inside_changed', alertData);
         awsIotProvider.subscribe('outside_running', alertData);
         awsIotProvider.subscribe('outside_changed', alertData);
         awsIotProvider.subscribe('esp32/pub', alertData);
-        awsIotProvider.subscribe('home_request', alertData);
+        awsIotProvider.subscribe('esp32/pub_home_inside', alertData);
+        awsIotProvider.subscribe('esp32/pub_home_outside', alertData);
         print("Subscribed to topics after successful connection.");
       } else {
         print("Failed to connect to MQTT broker.");
@@ -50,6 +56,20 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
     }).catchError((error) {
       print("Error connecting to MQTT broker: $error");
     });
+
+
+  DateTime selectedDate = DateTime.now();
+  String selectedDateString = '${DateTime.now().toString().substring(8, 10)}-${DateTime.now().toString().substring(5, 7)}-${DateTime.now().toString().substring(0, 4)}';
+  fetchWeatherData(selectedDateString);
+  }
+
+  Future<void> fetchWeatherData(String date) async {
+    await weatherProvider.getWeatherDataWithDay(date);
+    dynamic newWeatherData = weatherProvider.listItem[date]!.map((item) {
+      item['type'] = 'Đã đọc';
+      return item;
+    }).toList();
+    alertData.changeAlertDataNoNotify('esp', newWeatherData);
   }
 
   @override

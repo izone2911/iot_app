@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+// ignore: must_be_immutable
 class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
   PageController controller = PageController(initialPage: 0);
