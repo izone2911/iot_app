@@ -28,8 +28,6 @@ class AwsIotProvider with ChangeNotifier {
       "timestamp": "",
     },
     'mqtt_connect': true,
-    'show_noti_connect': false,
-    'show_noti_disconnect': true
   };
 
   Map<String, dynamic> get dataAws => _map;
@@ -81,7 +79,7 @@ class AwsIotProvider with ChangeNotifier {
       client.port = port;
       client.secure = true;
       client.logging(on: true);
-      client.keepAlivePeriod = 20;
+      client.keepAlivePeriod = 60;
 
       // Set connection callbacks
       client.onConnected = onConnected;
@@ -119,12 +117,18 @@ class AwsIotProvider with ChangeNotifier {
         if (topic == 'esp32/pub' && payload['id'] == 'inside') {
           addDataAws("esp32/pub_inside", payload);
           alertData.addAlertData("new", payload);
-          alertData.addAlertDataNoNotify("esp_inside", payload);
+          var newPayload = payload;
+          newPayload['type'] = 'Mới';
+          alertData.addAlertData("esp", newPayload);
+          // alertData.addAlertDataNoNotify("esp_inside", payload);
         }
         if (topic == 'esp32/pub' && payload['id'] == 'outside') {
           addDataAws("esp32/pub_outside", payload);
           alertData.addAlertData("new", payload);
-          alertData.addAlertDataNoNotify("esp_outside", payload);
+          var newPayload = payload;
+          newPayload['type'] = 'Mới';
+          alertData.addAlertData("esp", newPayload);
+          // alertData.addAlertDataNoNotify("esp_outside", payload);
         }
         if (topic != 'esp32/pub' &&
             topic != 'inside_changed' &&
@@ -190,21 +194,17 @@ class AwsIotProvider with ChangeNotifier {
 
   void onConnected() {
     addDataAws('mqtt_connect', true);
-    // addDataAws('show_noti_disconnect', false);
     print("Client connection was successful");
   }
 
   void onDisconnected() {
     addDataAws('mqtt_connect', false);
-    // addDataAws('show_noti_connect', true);
     print("Client disconnected");
   }
 
   void disconnect() {
     client.disconnect();
     addDataAws('mqtt_connect', false);
-    print("${dataAws['mqtt_connect']}   ${dataAws['show_noti_disconnect']}");
-    // addDataAws('show_noti_connect', true);
     print("Disconnected from AWS IoT");
   }
 }

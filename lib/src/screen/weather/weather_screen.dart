@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quanlyhoctap/src/network/lazy_loading_widget.dart';
 
-import '../../provider/_index.dart' show ButtonWeatherProvider, WeatherProvider;
+import '../../provider/_index.dart' show ButtonWeatherProvider, WeatherProvider, AlertData;
 import '../../network/network_widget.dart';
 import 'package:calendar_slider/calendar_slider.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -58,6 +58,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
 /////////////////////////////////////////////////Update Spots Data/////////////////////////////////////////////////
   void updateSpots(String date) {
+    final AlertData alertData = Provider.of(context, listen: false);
+    alertData.changeAlertDataNoNotify('old', weatherProvider.listItem[date] ?? []);
+    
     spotsTemperatureInside = (weatherProvider.listItem[date]
             ?.map((item) {
               if (item['id'] == 'inside') {

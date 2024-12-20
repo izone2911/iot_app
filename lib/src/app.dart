@@ -8,7 +8,7 @@ import 'provider/_index.dart' as provider;
 import 'screen/_index.dart' as screen;
 
 final GoRouter _router = GoRouter(
-  initialLocation: constant.RoutePath.login.absolute,
+  initialLocation: constant.RoutePath.home.absolute,
   routes: [
     GoRoute(
       name: constant.RoutePath.login.name,
@@ -64,7 +64,7 @@ class App extends StatelessWidget {
             ChangeNotifierProvider(create: (_) => provider.ConfigData()),
             ChangeNotifierProvider(
                 create: (context) =>
-                    provider.AwsIotProvider(clientId: "FixedClientID")),
+                    provider.AwsIotProvider(clientId: "FixedClientID5569")),
             ChangeNotifierProvider(
                 create: (_) => provider.ButtonWeatherProvider()),
           ],

@@ -54,11 +54,14 @@ class _HomeScreen extends State<HomeScreen> {
   void _onRefresh() async {
     awsIotProvider.connect().then((isConnected) {
       if (isConnected) {
+        awsIotProvider.publish("home_request","home_request");
         awsIotProvider.subscribe('inside_running', alertData);
         awsIotProvider.subscribe('inside_changed', alertData);
         awsIotProvider.subscribe('outside_running', alertData);
         awsIotProvider.subscribe('outside_changed', alertData);
         awsIotProvider.subscribe('esp32/pub', alertData);
+        awsIotProvider.subscribe('esp32/pub_home_inside', alertData);
+        awsIotProvider.subscribe('esp32/pub_home_outside', alertData);
         print("Subscribed to topics after successful connection.");
       } else {
         print("Failed to connect to MQTT broker.");
