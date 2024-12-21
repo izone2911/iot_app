@@ -54,7 +54,7 @@ class _HomeScreen extends State<HomeScreen> {
   void _onRefresh() async {
     awsIotProvider.connect().then((isConnected) {
       if (isConnected) {
-        awsIotProvider.publish("home_request","home_request");
+        awsIotProvider.publish("home_request", "home_request");
         awsIotProvider.subscribe('inside_running', alertData);
         awsIotProvider.subscribe('inside_changed', alertData);
         awsIotProvider.subscribe('outside_running', alertData);
@@ -84,7 +84,8 @@ class _HomeScreen extends State<HomeScreen> {
           : Consumer2<provider.AwsIotProvider, provider.AlertData>(
               builder: (context, awsIotProvider, alertData, child) {
               return SmartRefresher(
-                enablePullDown: !awsIotProvider.dataAws['mqtt_connect'],
+                // enablePullDown: !awsIotProvider.dataAws['mqtt_connect'],
+                enablePullDown: true,
                 header: WaterDropMaterialHeader(
                   backgroundColor: const Color.fromARGB(255, 147, 198, 240),
                   color: Colors.red,
@@ -111,10 +112,10 @@ class _HomeScreen extends State<HomeScreen> {
                                 ),
                               ),
                             ),
-                          ElevatedButton(
-                            onPressed: awsIotProvider.disconnect,
-                            child: Text("Test disconnect to Server"),
-                          ),
+                          // ElevatedButton(
+                          //   onPressed: awsIotProvider.disconnect,
+                          //   child: Text("Test disconnect to Server"),
+                          // ),
                         ],
                       ),
                     ),
@@ -140,7 +141,7 @@ class _HomeScreen extends State<HomeScreen> {
                                   : 'N/A',
                             ),
                             buildTemperatureContainer(
-                              title: "Ngoài nhà",
+                              title: "Ngoài trời",
                               temperature: awsIotProvider
                                           .dataAws['esp32/pub_outside'] !=
                                       null

@@ -13,6 +13,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../provider/weather_provider.dart';
 
+import '../alert/alert_screen.dart';
+
 class ScaffoldWithHomeNavigation extends StatefulWidget {
   const ScaffoldWithHomeNavigation({required this.navigationShell, super.key});
   final StatefulNavigationShell navigationShell;
@@ -57,10 +59,10 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
       print("Error connecting to MQTT broker: $error");
     });
 
-
-  DateTime selectedDate = DateTime.now();
-  String selectedDateString = '${DateTime.now().toString().substring(8, 10)}-${DateTime.now().toString().substring(5, 7)}-${DateTime.now().toString().substring(0, 4)}';
-  fetchWeatherData(selectedDateString);
+    DateTime selectedDate = DateTime.now();
+    String selectedDateString =
+        '${DateTime.now().toString().substring(8, 10)}-${DateTime.now().toString().substring(5, 7)}-${DateTime.now().toString().substring(0, 4)}';
+    fetchWeatherData(selectedDateString);
   }
 
   Future<void> fetchWeatherData(String date) async {
@@ -78,6 +80,7 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
 
     return Scaffold(
       appBar: AppBar(
+        title: Text('Quản lý thời tiết', style: TextStyle(color: const Color.fromARGB(255, 198, 0, 195))),
         backgroundColor: const Color.fromARGB(255, 147, 198, 240),
         actions: [
           Consumer2<provider.AlertData, provider.AwsIotProvider>(
@@ -91,7 +94,16 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
                       alertData.newData!.isNotEmpty ? Colors.red : Colors.black,
                 ),
                 onPressed: () {
-                  navigationShell.goBranch(3); // Chuyển đến trang thông báo
+                  alertData.changeExpandNoNotify(
+                      "is_expanded", !alertData.isExpand);
+                  alertData.isExpand
+                      ? navigationShell.goBranch(4)
+                      : navigationShell.goBranch(alertData.preBranch);
+                  alertData.isExpand
+                      ? alertData.changeBranch(
+                          "branch_pre", alertData.nowBranch, "branch_now", 4)
+                      : alertData.changeBranch(
+                          "branch_pre", 4, "branch_now", alertData.preBranch);
                 },
               );
             },
@@ -173,24 +185,74 @@ class _ScaffoldWithHomeNavigation extends State<ScaffoldWithHomeNavigation> {
           SidebarXItem(
             icon: Icons.home,
             label: 'Trang chủ',
-            onTap: () => navigationShell.goBranch(0),
+            onTap: () {
+              navigationShell.goBranch(0);
+              alertData.changeBranch(
+                  "branch_pre", alertData.nowBranch, "branch_now", 0);
+              alertData.changeExpandNoNotify("is_expanded", false);
+            },
           ),
           SidebarXItem(
             icon: Icons.insert_chart,
             label: 'Thống kê',
-            onTap: () => navigationShell.goBranch(1),
+            onTap: () {
+              navigationShell.goBranch(1);
+              alertData.changeBranch(
+                  "branch_pre", alertData.nowBranch, "branch_now", 1);
+              alertData.changeExpandNoNotify("is_expanded", false);
+            },
           ),
           SidebarXItem(
             icon: Icons.edgesensor_high,
             label: 'Quản lý thiết bị',
-            onTap: () => navigationShell.goBranch(2),
+            onTap: () {
+              navigationShell.goBranch(2);
+              alertData.changeBranch(
+                  "branch_pre", alertData.nowBranch, "branch_now", 2);
+              alertData.changeExpandNoNotify("is_expanded", false);
+            },
           ),
           SidebarXItem(
-            icon: Icons.logout,
-            label: 'Đăng xuất',
-            onTap: () => context.go('/login'),
+            icon: Icons.announcement,
+            label: 'Thời tiết',
+            onTap: () {
+              navigationShell.goBranch(3);
+              alertData.changeBranch(
+                  "branch_pre", alertData.nowBranch, "branch_now", 3);
+              alertData.changeExpandNoNotify("is_expanded", false);
+            },
           ),
         ],
+
+        footerBuilder: (context, extended) {
+          return Padding(
+            padding: const EdgeInsets.all(1.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    context.go('/login');
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.logout, color: Colors.white),
+                      if (extended)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            'Đăng xuất',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

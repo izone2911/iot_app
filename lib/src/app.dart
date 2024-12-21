@@ -43,6 +43,13 @@ final GoRouter _router = GoRouter(
         ]),
         StatefulShellBranch(routes: [
           GoRoute(
+            name: constant.RoutePath.world.name,
+            path: constant.RoutePath.world.relative,
+            builder: (_, __) => const screen.WorldWeatherScreen(),
+          )
+        ]),
+        StatefulShellBranch(routes: [
+          GoRoute(
             name: constant.RoutePath.alert.name,
             path: constant.RoutePath.alert.relative,
             builder: (_, __) => const screen.AlertScreen(),
