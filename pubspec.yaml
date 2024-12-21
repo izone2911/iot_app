@@ -32,6 +32,7 @@ dependencies:
   pull_to_refresh: ^2.0.0
   in_app_notification: ^1.1.2
   elegant_notification: ^2.4.0
+  weather: ^3.1.1
   # ndialog: ^4.3.1
 
 dev_dependencies:

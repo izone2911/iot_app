@@ -70,7 +70,9 @@ class ExpandableListItem extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
-        color: const Color.fromARGB(255, 223, 233, 241),
+        color: item['type'] == 'Mới'
+            ? const Color.fromARGB(255, 195, 218, 242)
+            : const Color.fromARGB(255, 223, 233, 241),
       ),
       child: ExpansionTile(
       onExpansionChanged: (expanded) {
@@ -92,10 +94,10 @@ class ExpandableListItem extends StatelessWidget {
           Icons.sunny,
           color: Colors.red,
         ),
-        SizedBox(width: 5.0),
+        SizedBox(width: 16.0),
         item['type'] == 'Mới'
-        ?Text(item['timestamp'], style: TextStyle(fontWeight: FontWeight.bold))
-        :Text(item['timestamp']),
+        ?Text(item['timestamp'].substring(11,19), style: TextStyle(fontWeight: FontWeight.bold))
+        :Text(item['timestamp'].substring(11,19)),
         Spacer(),
         item['type'] == 'Mới'
         ?Icon(

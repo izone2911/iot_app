@@ -10,17 +10,16 @@ class AlertData with ChangeNotifier {
   final Map<String, dynamic> _alert = {
     "new": [],
     "esp": [],
-    "color_new": Colors.red,
-    "color_old": Colors.green,
-    "font_old": FontWeight.w400,
-    "font_new": FontWeight.bold,
-    "fontsize_old": 14.0,
-    "fontsize_new": 16.0,
+    "is_expanded": false,
+    "branch_now": 0,
+    "branch_pre": 0
   };
 
   List? get newData => _alert["new"];
   List? get allData => _alert["esp"];
-  dynamic get colorData => _alert;
+  dynamic get isExpand => _alert["is_expanded"];
+  dynamic get preBranch => _alert['branch_pre'];
+  dynamic get nowBranch => _alert['branch_now'];
 
   void addAlertData(String key, dynamic item) {
     _alert[key]!.add(item);
@@ -58,5 +57,15 @@ class AlertData with ChangeNotifier {
       String timestampB = b['timestamp'] as String; 
       return timestampB.compareTo(timestampA);
     });
+  }
+
+  void changeExpandNoNotify(String key, dynamic item) {
+    _alert[key] = item; 
+  }
+
+  void changeBranch(String key1, int item1, String key2, int item2){
+    _alert[key1] = item1;
+    _alert[key2] = item2;
+    print("${_alert['branch_pre']}------${_alert['branch_now']}------${_alert['branch_pre'].runtimeType}------${_alert['branch_now'].runtimeType}------${_alert['is_expanded']}");
   }
 }
